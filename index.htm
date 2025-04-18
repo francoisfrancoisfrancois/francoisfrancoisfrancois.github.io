@@ -33,6 +33,12 @@
     -moz-hyphens: auto;
   }
 
+    @media (pointer: coarse) {
+      .hover-caption {
+        display: none !important;
+      }
+    }    
+
   /* Layout Structure */
 
   .page-wrapper {
@@ -182,48 +188,48 @@
 <div id="hover-caption" class="hover-caption"></div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  document.addEventListener('DOMContentLoaded', () => {
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-      let hoverEnabled = true;
-      let mouseMovedAfterExpansion = false;
-      let mouseX = 0;
-      let mouseY = 0;
+    let hoverEnabled = true;
+    let mouseMovedAfterExpansion = false;
+    let mouseX = 0;
+    let mouseY = 0;
 
-      // Track mouse position and movement
-      window.addEventListener('mousemove', (e) => {
-        const moved = e.clientX !== mouseX || e.clientY !== mouseY;
+    // Track mouse position and movement
+    window.addEventListener('mousemove', (e) => {
+      const moved = e.clientX !== mouseX || e.clientY !== mouseY;
 
-        if (!mouseMovedAfterExpansion && !hoverEnabled && moved) {
-          hoverEnabled = true;
-          mouseMovedAfterExpansion = true;
+      if (!mouseMovedAfterExpansion && !hoverEnabled && moved) {
+        hoverEnabled = true;
+        mouseMovedAfterExpansion = true;
 
-          checkHoveredImageTrigger();
-          checkHoveredExpandable();
+        checkHoveredImageTrigger();
+        checkHoveredExpandable();
 
-          // Re-enable hover styling globally
-          document.querySelectorAll('.expandable').forEach(el => {
-            el.classList.remove('no-hover');
-          });
-        }
-
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-      });
-
-      function checkHoveredImageTrigger() {
-        const el = document.elementFromPoint(mouseX, mouseY);
-        if (el?.classList.contains('western-trigger')) showHoverImage(el, 'hoverImageWestern');
-        if (el?.classList.contains('type-trigger')) showHoverImage(el, 'hoverImageType');
+        // Re-enable hover styling globally
+        document.querySelectorAll('.expandable').forEach(el => {
+          el.classList.remove('no-hover');
+        });
       }
 
-      function checkHoveredExpandable() {
-        const el = document.elementFromPoint(mouseX, mouseY);
-        if (el?.classList.contains('expandable')) {
-          el.classList.add('hover-effect');
-          el.addEventListener('mouseleave', () => el.classList.remove('hover-effect'), { once: true });
-        }
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    function checkHoveredImageTrigger() {
+      const el = document.elementFromPoint(mouseX, mouseY);
+      if (el?.classList.contains('western-trigger')) showHoverImage(el, 'hoverImageWestern');
+      if (el?.classList.contains('type-trigger')) showHoverImage(el, 'hoverImageType');
+    }
+
+    function checkHoveredExpandable() {
+      const el = document.elementFromPoint(mouseX, mouseY);
+      if (el?.classList.contains('expandable')) {
+        el.classList.add('hover-effect');
+        el.addEventListener('mouseleave', () => el.classList.remove('hover-effect'), { once: true });
       }
+    }
 
     function showHoverImage(trigger, imageId) {
       if (!hoverEnabled) return;
@@ -247,98 +253,91 @@
       trigger.addEventListener('mouseleave', () => {
         hoverImage.classList.remove('show-image');
 
-        // Hide caption ONLY on non-touch devices
         if (!isTouchDevice) {
           const captionEl = document.getElementById('hover-caption');
-          if (captionEl) {
-            captionEl.classList.remove('show');
-          }
+          if (captionEl) captionEl.classList.remove('show');
         }
       }, { once: true });
     }
 
-      function setupHover(selector, imageId) {
-        document.body.addEventListener('mouseenter', (e) => {
-          if (e.target.matches(selector) && hoverEnabled) {
-            showHoverImage(e.target, imageId);
-          }
-        }, true);
-      }
+    function setupHover(selector, imageId) {
+      document.body.addEventListener('mouseenter', (e) => {
+        if (e.target.matches(selector) && hoverEnabled) {
+          showHoverImage(e.target, imageId);
+        }
+      }, true);
+    }
 
-      setupHover('.western-trigger', 'hoverImageWestern');
-      setupHover('.type-trigger', 'hoverImageType');
+    setupHover('.western-trigger', 'hoverImageWestern');
+    setupHover('.type-trigger', 'hoverImageType');
 
-      // Expandable logic
-      document.body.addEventListener('click', (event) => {
-        if (event.target.classList.contains('expandable')) {
-          const expandable = event.target;
-          const hidden = expandable.nextElementSibling;
+    // Expandable logic
+    document.body.addEventListener('click', (event) => {
+      if (event.target.classList.contains('expandable')) {
+        const expandable = event.target;
+        const hidden = expandable.nextElementSibling;
 
-          if (hidden && hidden.classList.contains('hidden')) {
-            const expandContent = () => {
-              const previous = document.querySelector('.highlighted');
-              if (previous) previous.classList.remove('highlighted');
+        if (hidden && hidden.classList.contains('hidden')) {
+          const expandContent = () => {
+            const previous = document.querySelector('.highlighted');
+            if (previous) previous.classList.remove('highlighted');
 
-              hidden.classList.remove('hidden');
-              expandable.style.display = 'none';
-              hidden.classList.add('highlighted');
+            hidden.classList.remove('hidden');
+            expandable.style.display = 'none';
+            hidden.classList.add('highlighted');
 
-              // Disable hover globally until mouse moves again
-              hoverEnabled = false;
-              mouseMovedAfterExpansion = false;
+            hoverEnabled = false;
+            mouseMovedAfterExpansion = false;
 
-              hidden.querySelectorAll('.expandable').forEach(el => el.classList.add('no-hover'));
-            };
+            hidden.querySelectorAll('.expandable').forEach(el => el.classList.add('no-hover'));
+          };
 
-            if (!isTouchDevice) {
-              expandable.classList.add('hover-effect', 'clicked');
-              setTimeout(() => {
-                expandable.classList.remove('hover-effect', 'clicked');
-                expandContent();
-              }, 100);
-            } else {
+          if (!isTouchDevice) {
+            expandable.classList.add('hover-effect', 'clicked');
+            setTimeout(() => {
+              expandable.classList.remove('hover-effect', 'clicked');
               expandContent();
-            }
+            }, 100);
+          } else {
+            expandContent();
           }
         }
-      });
-
-      // Footer resize scroll handler
-      const footer = document.querySelector('.footer-container');
-      if (footer) {
-        let previousHeight = footer.offsetHeight;
-        const observer = new ResizeObserver(entries => {
-          for (const entry of entries) {
-            const newHeight = entry.contentRect.height;
-            const diff = newHeight - previousHeight;
-            if (diff > 0) {
-              window.scrollBy(0, diff);
-            }
-            previousHeight = newHeight;
-          }
-        });
-        observer.observe(footer);
       }
+    });
 
-    // Touch device specific behavior: Toggle image on click (no caption)
+    // Footer resize scroll handler
+    const footer = document.querySelector('.footer-container');
+    if (footer) {
+      let previousHeight = footer.offsetHeight;
+      const observer = new ResizeObserver(entries => {
+        for (const entry of entries) {
+          const newHeight = entry.contentRect.height;
+          const diff = newHeight - previousHeight;
+          if (diff > 0) window.scrollBy(0, diff);
+          previousHeight = newHeight;
+        }
+      });
+      observer.observe(footer);
+    }
+
+    // Touch device: Toggle image visibility on click
     if (isTouchDevice) {
       const triggerElements = document.querySelectorAll('.western-trigger, .type-trigger');
       triggerElements.forEach((trigger) => {
         trigger.addEventListener('click', function () {
           const imageId = trigger.classList.contains('western-trigger') ? 'hoverImageWestern' : 'hoverImageType';
           const hoverImage = document.getElementById(imageId);
-
           const isImageVisible = hoverImage.classList.contains('show-image');
-          if (isImageVisible) {
-            hoverImage.classList.remove('show-image');
-          } else {
-            document.querySelectorAll('.hover-image').forEach(img => img.classList.remove('show-image'));
+
+          document.querySelectorAll('.hover-image').forEach(img => img.classList.remove('show-image'));
+
+          if (!isImageVisible) {
             hoverImage.classList.add('show-image');
           }
         });
       });
     }
-    });
+  });
 </script>
 
 </body>
