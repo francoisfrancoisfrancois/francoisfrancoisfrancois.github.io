@@ -39,6 +39,12 @@
         display: none !important;
       }
     }
+    
+    .no-scroll {
+      overflow: hidden;
+      position: fixed;
+      width: 100%;
+    }
 
   /* Layout Structure */
 
@@ -193,7 +199,6 @@
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     let mouseMoved = false;
 
-    // Function to apply hover effect for desktop
     function applyHoverEffect(trigger, imageId) {
       if (!mouseMoved && !isTouchDevice) return;
 
@@ -208,7 +213,6 @@
       });
     }
 
-    // Setup hover/touch trigger
     function setupHoverTrigger(selector, imageId) {
       const trigger = document.querySelector(selector);
       if (!trigger) return;
@@ -225,9 +229,11 @@
           // Hide all images
           document.querySelectorAll('.hover-image').forEach(img => img.classList.remove('show-image'));
 
-          // Toggle this one
           if (!isVisible) {
             hoverImage.classList.add('show-image');
+            document.body.classList.add('no-scroll');
+          } else {
+            document.body.classList.remove('no-scroll');
           }
         });
       } else {
@@ -249,13 +255,15 @@
     if (isTouchDevice) {
       document.body.addEventListener('click', (e) => {
         const isTrigger = e.target.closest('.trigger');
-        if (!isTrigger) {
-          document.querySelectorAll('.hover-image').forEach(img => img.classList.remove('show-image'));
+        const openImage = document.querySelector('.hover-image.show-image');
+        if (!isTrigger && openImage) {
+          openImage.classList.remove('show-image');
+          document.body.classList.remove('no-scroll');
         }
       });
     }
 
-    // Track mouse move to enable hover
+    // Mouse movement for desktop hover
     function onMouseMove() {
       mouseMoved = true;
       window.removeEventListener('mousemove', onMouseMove);
