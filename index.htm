@@ -313,37 +313,24 @@
         observer.observe(footer);
       }
 
-      // Touch device specific behavior: Toggle image and caption on click
-      if (isTouchDevice) {
-        const triggerElements = document.querySelectorAll('.western-trigger, .type-trigger');
-        triggerElements.forEach((trigger) => {
-          trigger.addEventListener('click', function () {
-            const imageId = trigger.classList.contains('western-trigger') ? 'hoverImageWestern' : 'hoverImageType';
-            const hoverImage = document.getElementById(imageId);
-            const captionText = trigger.getAttribute('data-caption');
-            const captionEl = document.getElementById('hover-caption');
+    // Touch device specific behavior: Toggle image on click (no caption)
+    if (isTouchDevice) {
+      const triggerElements = document.querySelectorAll('.western-trigger, .type-trigger');
+      triggerElements.forEach((trigger) => {
+        trigger.addEventListener('click', function () {
+          const imageId = trigger.classList.contains('western-trigger') ? 'hoverImageWestern' : 'hoverImageType';
+          const hoverImage = document.getElementById(imageId);
 
-            // Toggle the image and caption visibility
-            const isImageVisible = hoverImage.classList.contains('show-image');
-            if (isImageVisible) {
-              hoverImage.classList.remove('show-image');
-              if (captionEl) {
-                captionEl.classList.remove('show');
-              }
-            } else {
-              // Hide any other visible hover images
-              document.querySelectorAll('.hover-image').forEach(img => img.classList.remove('show-image'));
-              hoverImage.classList.add('show-image');
-
-              // Show the caption
-              if (captionText && captionEl) {
-                captionEl.textContent = captionText;
-                captionEl.classList.add('show');
-              }
-            }
-          });
+          const isImageVisible = hoverImage.classList.contains('show-image');
+          if (isImageVisible) {
+            hoverImage.classList.remove('show-image');
+          } else {
+            document.querySelectorAll('.hover-image').forEach(img => img.classList.remove('show-image'));
+            hoverImage.classList.add('show-image');
+          }
         });
-      }
+      });
+    }
     });
 </script>
 
