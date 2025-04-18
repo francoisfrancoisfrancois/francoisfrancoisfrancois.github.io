@@ -103,6 +103,7 @@
         left: 0;
         width: 100%;
         z-index: 998;
+        transition: transform 0.3s ease;
       }
 
       .footer-gradient {
@@ -186,7 +187,6 @@
     setupHoverTrigger('.western-trigger', 'hoverImageWestern');
     setupHoverTrigger('.type-trigger', 'hoverImageType');
 
-    // Detect touch devices
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
     // Expandable content logic
@@ -219,7 +219,6 @@
           };
 
           if (!isTouchDevice) {
-            // Linger 100ms with clicked style
             expandable.classList.add('hover-effect', 'clicked');
             setTimeout(() => {
               expandable.classList.remove('hover-effect', 'clicked');
@@ -232,7 +231,7 @@
       }
     });
 
-    // Hover effect for all .expandable elements (touch only)
+    // Hover effect for .expandable on touch
     document.querySelectorAll('.expandable').forEach(item => {
       const triggerHoverEffect = () => {
         item.classList.add('hover-effect');
@@ -246,11 +245,12 @@
       }
     });
 
-    // Footer margin logic
+    // Footer logic
     const footer = document.querySelector('.footer-container');
     if (!footer) return;
 
     let previousHeight = footer.offsetHeight;
+    let ignoreScroll = false;
 
     function getMargin(height) {
       return Math.max(0, height - 15);
@@ -268,8 +268,11 @@
         updateBodyMargin(newHeight);
 
         const delta = newHeight - previousHeight;
+
         if (delta > 0) {
+          ignoreScroll = true; // Flag to ignore scroll
           window.scrollTo(0, window.scrollY + delta);
+          setTimeout(() => ignoreScroll = false, 100); // Reset after a moment
         }
 
         previousHeight = newHeight;
@@ -277,6 +280,23 @@
     });
 
     observer.observe(footer);
+
+    // Scroll-based hide/show
+    let lastScrollY = window.scrollY;
+
+    window.addEventListener('scroll', () => {
+      if (ignoreScroll) return;
+
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY + 10) {
+        footer.style.transform = 'translateY(100%)';
+      } else if (currentScrollY < lastScrollY - 10) {
+        footer.style.transform = 'translateY(0)';
+      }
+
+      lastScrollY = currentScrollY;
+    });
   });
 </script>
 
