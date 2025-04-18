@@ -143,7 +143,7 @@
   bottom: 0;
   width: 100%;
   text-align: center;
-  margin: 8px 12px;
+  margin: 8px 0x;
   font-size: inherit;
   font-family: inherit;
   z-index: 1000;
@@ -225,30 +225,37 @@
         }
       }
 
-      function showHoverImage(trigger, imageId) {
-        if (!hoverEnabled) return;
+    function showHoverImage(trigger, imageId) {
+      if (!hoverEnabled) return;
 
-        const hoverImage = document.getElementById(imageId);
-        if (!hoverImage) return;
+      const hoverImage = document.getElementById(imageId);
+      if (!hoverImage) return;
 
-        document.querySelectorAll('.hover-image').forEach(img => img.classList.remove('show-image'));
-        hoverImage.classList.add('show-image');
+      document.querySelectorAll('.hover-image').forEach(img => img.classList.remove('show-image'));
+      hoverImage.classList.add('show-image');
 
-        // Show caption
+      // Show caption ONLY on non-touch devices
+      if (!isTouchDevice) {
         const captionText = trigger.getAttribute('data-caption');
         const captionEl = document.getElementById('hover-caption');
         if (captionText && captionEl) {
           captionEl.textContent = captionText;
           captionEl.classList.add('show');
         }
+      }
 
-        trigger.addEventListener('mouseleave', () => {
-          hoverImage.classList.remove('show-image');
+      trigger.addEventListener('mouseleave', () => {
+        hoverImage.classList.remove('show-image');
+
+        // Hide caption ONLY on non-touch devices
+        if (!isTouchDevice) {
+          const captionEl = document.getElementById('hover-caption');
           if (captionEl) {
             captionEl.classList.remove('show');
           }
-        }, { once: true });
-      }
+        }
+      }, { once: true });
+    }
 
       function setupHover(selector, imageId) {
         document.body.addEventListener('mouseenter', (e) => {
