@@ -166,7 +166,6 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    // Hover image trigger setup
     function setupHoverTrigger(triggerSelector, imageId) {
       const trigger = document.querySelector(triggerSelector);
       const hoverImage = document.getElementById(imageId);
@@ -189,7 +188,6 @@
 
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-    // Expandable content logic
     document.body.addEventListener('click', (event) => {
       if (event.target.classList.contains('expandable')) {
         const expandable = event.target;
@@ -231,7 +229,6 @@
       }
     });
 
-    // Hover effect for .expandable on touch
     document.querySelectorAll('.expandable').forEach(item => {
       const triggerHoverEffect = () => {
         item.classList.add('hover-effect');
@@ -245,7 +242,6 @@
       }
     });
 
-    // Footer logic
     const footer = document.querySelector('.footer-container');
     if (!footer) return;
 
@@ -270,9 +266,9 @@
         const delta = newHeight - previousHeight;
 
         if (delta > 0) {
-          ignoreScroll = true; // Flag to ignore scroll
+          ignoreScroll = true;
           window.scrollTo(0, window.scrollY + delta);
-          setTimeout(() => ignoreScroll = false, 100); // Reset after a moment
+          setTimeout(() => ignoreScroll = false, 100);
         }
 
         previousHeight = newHeight;
@@ -281,15 +277,19 @@
 
     observer.observe(footer);
 
-    // Scroll-based hide/show
+    // Scroll-based footer behavior
     let lastScrollY = window.scrollY;
 
     window.addEventListener('scroll', () => {
       if (ignoreScroll) return;
 
       const currentScrollY = window.scrollY;
+      const scrolledToBottom = window.innerHeight + currentScrollY >= document.body.offsetHeight - 1;
 
-      if (currentScrollY > lastScrollY + 10) {
+      if (scrolledToBottom) {
+        // Always show footer at bottom
+        footer.style.transform = 'translateY(0)';
+      } else if (currentScrollY > lastScrollY + 10) {
         footer.style.transform = 'translateY(100%)';
       } else if (currentScrollY < lastScrollY - 10) {
         footer.style.transform = 'translateY(0)';
