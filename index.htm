@@ -181,151 +181,163 @@
 <div id="hover-caption" class="hover-caption"></div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    let mouseMoved = false;  // Track if the mouse has moved after the expansion
+    document.addEventListener('DOMContentLoaded', () => {
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      let mouseMoved = false;  // Track if the mouse has moved after the expansion
 
-    // Function to apply hover effect when mouse has moved
-    function applyHoverEffect(trigger, imageId) {
-      if (!mouseMoved) return;  // Don't trigger hover effect unless mouse has moved
+      // Function to apply hover effect when mouse has moved or on touchstart for mobile
+      function applyHoverEffect(trigger, imageId) {
+        if (!mouseMoved && !isTouchDevice) return;  // Don't trigger hover effect unless mouse has moved or on touch
 
-      const hoverImage = document.getElementById(imageId);
-      if (!hoverImage) return;
-
-      // Hide all other hover images
-      document.querySelectorAll('.hover-image').forEach(img => img.classList.remove('show-image'));
-      hoverImage.classList.add('show-image');
-
-      // Remove hover effect when mouse leaves the trigger
-      trigger.addEventListener('mouseleave', () => {
-        hoverImage.classList.remove('show-image');
-      });
-    }
-
-    // Setup hover trigger for a given selector
-    function setupHoverTrigger(selector, imageId) {
-      const trigger = document.querySelector(selector);
-      if (!trigger) return;
-
-      // Listen for mouseenter to show hover effect after mouse has moved
-      trigger.addEventListener('mouseenter', () => {
-        applyHoverEffect(trigger, imageId);
-      });
-
-      trigger.addEventListener('mouseleave', () => {
         const hoverImage = document.getElementById(imageId);
-        if (hoverImage) {
+        if (!hoverImage) return;
+
+        // Hide all other hover images
+        document.querySelectorAll('.hover-image').forEach(img => img.classList.remove('show-image'));
+        hoverImage.classList.add('show-image');
+
+        // Remove hover effect when mouse leaves the trigger or on touchend
+        trigger.addEventListener('mouseleave', () => {
           hoverImage.classList.remove('show-image');
-        }
-      });
-    }
-
-    setupHoverTrigger('.western-trigger', 'hoverImageWestern');
-    setupHoverTrigger('.type-trigger', 'hoverImageType');
-
-    // Function to track the mouse move and enable hover effect
-    function onMouseMove() {
-      mouseMoved = true;
-      window.removeEventListener('mousemove', onMouseMove);  // Only listen once
-    }
-
-    // Listen for the first mouse movement to enable the hover effects
-    window.addEventListener('mousemove', onMouseMove);
-
-    // Caption Logic
-    const hoverCaption = document.getElementById('hover-caption');
-
-    document.querySelectorAll('.hover-link, .trigger').forEach(el => {
-      el.addEventListener('mouseenter', () => {
-        const caption = el.dataset.caption;
-        if (caption) {
-          hoverCaption.innerHTML = caption;
-          hoverCaption.classList.add('show');
-        }
-      });
-
-      el.addEventListener('mouseleave', () => {
-        if (hoverCaption) {
-          hoverCaption.classList.remove('show');
-        }
-      });
-    });
-
-    // Expandable content logic
-    document.body.addEventListener('click', (event) => {
-      if (event.target.classList.contains('expandable')) {
-        const expandable = event.target;
-        const hidden = expandable.nextElementSibling;
-
-        if (hidden && hidden.classList.contains('hidden')) {
-          const expandContent = () => {
-            const previous = document.querySelector('.highlighted');
-            if (previous) previous.classList.remove('highlighted');
-
-            hidden.classList.remove('hidden');
-            expandable.style.display = 'none';
-            hidden.classList.add('highlighted');
-
-            const newExpandables = hidden.querySelectorAll('.expandable');
-
-            if (!isTouchDevice) {
-              newExpandables.forEach(el => el.classList.add('no-hover'));
-              const onMove = () => {
-                newExpandables.forEach(el => el.classList.remove('no-hover'));
-                window.removeEventListener('mousemove', onMove);
-              };
-              window.addEventListener('mousemove', onMove);
-            } else {
-              newExpandables.forEach(el => el.classList.remove('no-hover'));
-            }
-          };
-
-          if (!isTouchDevice) {
-            expandable.classList.add('hover-effect', 'clicked');
-            setTimeout(() => {
-              expandable.classList.remove('hover-effect', 'clicked');
-              expandContent();
-            }, 100);
-          } else {
-            expandContent();
-          }
+        });
+        if (isTouchDevice) {
+          trigger.addEventListener('touchend', () => {
+            hoverImage.classList.remove('show-image');
+          });
         }
       }
-    });
 
-    // Expandables on touch
-    document.querySelectorAll('.expandable').forEach(item => {
-      if (isTouchDevice) {
-        item.addEventListener('touchstart', () => {
-          item.classList.add('hover-effect');
-          setTimeout(() => {
-            item.classList.remove('hover-effect');
-          }, 100);
+      // Setup hover trigger for a given selector
+      function setupHoverTrigger(selector, imageId) {
+        const trigger = document.querySelector(selector);
+        if (!trigger) return;
+
+        // Listen for mouseenter to show hover effect after mouse has moved or touchstart on mobile
+        trigger.addEventListener('mouseenter', () => {
+          applyHoverEffect(trigger, imageId);
+        });
+
+        if (isTouchDevice) {
+          // On touchstart, apply the hover effect
+          trigger.addEventListener('touchstart', () => {
+            applyHoverEffect(trigger, imageId);
+          });
+        }
+
+        trigger.addEventListener('mouseleave', () => {
+          const hoverImage = document.getElementById(imageId);
+          if (hoverImage) {
+            hoverImage.classList.remove('show-image');
+          }
         });
       }
-    });
 
-    // Footer resize scroll compensation
-    const footer = document.querySelector('.footer-container');
-    if (footer) {
-      let previousHeight = footer.offsetHeight;
+      setupHoverTrigger('.western-trigger', 'hoverImageWestern');
+      setupHoverTrigger('.type-trigger', 'hoverImageType');
 
-      const observer = new ResizeObserver(entries => {
-        for (let entry of entries) {
-          const newHeight = entry.contentRect.height;
-          const heightDiff = newHeight - previousHeight;
+      // Function to track the mouse move and enable hover effect
+      function onMouseMove() {
+        mouseMoved = true;
+        window.removeEventListener('mousemove', onMouseMove);  // Only listen once
+      }
 
-          if (heightDiff > 0) {
-            window.scrollBy(0, heightDiff);
+      // Listen for the first mouse movement to enable the hover effects
+      window.addEventListener('mousemove', onMouseMove);
+
+      // Caption Logic
+      const hoverCaption = document.getElementById('hover-caption');
+
+      document.querySelectorAll('.hover-link, .trigger').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+          const caption = el.dataset.caption;
+          if (caption) {
+            hoverCaption.innerHTML = caption;
+            hoverCaption.classList.add('show');
           }
+        });
 
-          previousHeight = newHeight;
+        el.addEventListener('mouseleave', () => {
+          if (hoverCaption) {
+            hoverCaption.classList.remove('show');
+          }
+        });
+      });
+
+      // Expandable content logic
+      document.body.addEventListener('click', (event) => {
+        if (event.target.classList.contains('expandable')) {
+          const expandable = event.target;
+          const hidden = expandable.nextElementSibling;
+
+          if (hidden && hidden.classList.contains('hidden')) {
+            const expandContent = () => {
+              const previous = document.querySelector('.highlighted');
+              if (previous) previous.classList.remove('highlighted');
+
+              hidden.classList.remove('hidden');
+              expandable.style.display = 'none';
+              hidden.classList.add('highlighted');
+
+              const newExpandables = hidden.querySelectorAll('.expandable');
+
+              if (!isTouchDevice) {
+                newExpandables.forEach(el => el.classList.add('no-hover'));
+                const onMove = () => {
+                  newExpandables.forEach(el => el.classList.remove('no-hover'));
+                  window.removeEventListener('mousemove', onMove);
+                };
+                window.addEventListener('mousemove', onMove);
+              } else {
+                newExpandables.forEach(el => el.classList.remove('no-hover'));
+              }
+            };
+
+            if (!isTouchDevice) {
+              expandable.classList.add('hover-effect', 'clicked');
+              setTimeout(() => {
+                expandable.classList.remove('hover-effect', 'clicked');
+                expandContent();
+              }, 100);
+            } else {
+              expandContent();
+            }
+          }
         }
       });
 
-      observer.observe(footer);
-    }
-  });
+      // Expandables on touch
+      document.querySelectorAll('.expandable').forEach(item => {
+        if (isTouchDevice) {
+          item.addEventListener('touchstart', () => {
+            item.classList.add('hover-effect');
+            setTimeout(() => {
+              item.classList.remove('hover-effect');
+            }, 100);
+          });
+        }
+      });
+
+      // Footer resize scroll compensation
+      const footer = document.querySelector('.footer-container');
+      if (footer) {
+        let previousHeight = footer.offsetHeight;
+
+        const observer = new ResizeObserver(entries => {
+          for (let entry of entries) {
+            const newHeight = entry.contentRect.height;
+            const heightDiff = newHeight - previousHeight;
+
+            if (heightDiff > 0) {
+              window.scrollBy(0, heightDiff);
+            }
+
+            previousHeight = newHeight;
+          }
+        });
+
+        observer.observe(footer);
+      }
+    });
 </script>
 
 </body>
