@@ -373,6 +373,7 @@
     function checkAsciiArtVisibility() {
       const asciiArt = document.getElementById('ascii-art');
       const content = document.querySelector('.content');
+      const footer = document.querySelector('footer');
       const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
       if (!asciiArt || !content || !isMobile) {
@@ -384,21 +385,23 @@
       const viewportHeight = window.innerHeight;
 
       const tooTall = contentHeight > viewportHeight * 0.75;
-      const anyExpanded = !!document.querySelector('.highlighted');
 
-      if (tooTall || anyExpanded) {
+      // Only look for .highlighted *within* the footer
+      const anyFooterExpanded = footer && footer.querySelector('.highlighted');
+
+      if (tooTall || anyFooterExpanded) {
         asciiArt.style.display = 'none';
       } else {
         asciiArt.style.display = '';
       }
     }
 
-    // Run on resize & expansion
     window.addEventListener('resize', checkAsciiArtVisibility);
     document.body.addEventListener('click', () => {
-      // Delay slightly to allow DOM updates
-      setTimeout(checkAsciiArtVisibility, 100);
+      setTimeout(checkAsciiArtVisibility, 100); // wait for class changes
     });
+
+    document.addEventListener('DOMContentLoaded', checkAsciiArtVisibility);
 
   });
 </script>
