@@ -37,6 +37,8 @@
     hyphens: auto;
     -webkit-hyphens: auto;
     -moz-hyphens: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
     
     /* Hide hover caption on mobile devices */
@@ -56,7 +58,7 @@
 
   .content {
     flex: 1;
-    margin: 7px 10px 31px 10px;
+    margin: 5px 9px 15px 9px;
     text-align: left;
   }
 
@@ -64,7 +66,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    margin: 0px 10px 8px 10px;
+    margin: 0px 9px 8px 9px;
     position: relative;
     text-align: left;
   }
@@ -96,20 +98,20 @@
     color: inherit;
     cursor: pointer;
     text-decoration: none;
-    box-shadow: inset 0 -1.06em 0 #ffff00;
+    box-shadow: inset 0 -1.06em 0 #96E2F9;
     transition: box-shadow 0.2s;
   }
 
   .expandable:hover,
   .expandable.hover-effect {
     color: white;
-    box-shadow: inset 0 -1.06em 0 #0000FF;
+    box-shadow: inset 0 -1.06em 0 #F77039;
     transition: box-shadow 0.2s;
   }
 
   .expandable.clicked {
     color: inherit;
-    box-shadow: inset 0 -1.06em 0 #FFFF00;
+    box-shadow: inset 0 -1.06em 0 #96E2F9;
   }
 
   .expandable.no-hover {
@@ -117,7 +119,7 @@
   }
 
   .highlighted {
-    box-shadow: inset 0 -1.06em 0 #FFFFB3;
+    box-shadow: inset 0 -1.06em 0 #D9F4FD;
   }
 
   .hidden {
@@ -381,6 +383,12 @@
     const right = document.querySelector('.footer-right');
 
     function checkOverlap() {
+      // Always make sure right is visible before measuring
+      const wasHidden = right.style.display === 'none';
+      if (wasHidden) {
+        right.style.display = ''; // Temporarily show it to measure
+      }
+
       const leftRect = left.getBoundingClientRect();
       const rightRect = right.getBoundingClientRect();
 
@@ -390,17 +398,22 @@
                         leftRect.top > rightRect.bottom);
 
       if (overlap) {
-        right.style.visibility = 'hidden';
+        right.style.display = 'none';
       } else {
-        right.style.visibility = 'visible';
+        if (wasHidden) {
+          right.style.display = '';
+        }
       }
     }
 
-    // Re-check whenever layout changes
+    // Re-check on resize and when either element changes size
     window.addEventListener('resize', checkOverlap);
     const observer = new ResizeObserver(checkOverlap);
     observer.observe(left);
     observer.observe(right);
+
+    // Initial check
+    checkOverlap();
       
   });
 </script>
