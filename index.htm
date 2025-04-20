@@ -163,7 +163,8 @@
   }
 
   a:hover {
-    color: black;
+    color: white; /* fallback */
+    mix-blend-mode: difference;
   }
 
   .link:hover {
@@ -176,6 +177,8 @@
 }
     
 .hover-caption {
+  color: white; /* fallback */
+  mix-blend-mode: difference;
   position: fixed;
   bottom: 0;
   width: 100%;
