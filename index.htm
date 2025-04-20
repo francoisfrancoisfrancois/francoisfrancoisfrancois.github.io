@@ -13,6 +13,11 @@
     font-family: 'HelveticaLTNarrow';
     src: local('☺'), url('fonts/helveticaltnarrow-webfont.woff') format('woff');
   }
+    
+  @font-face {
+    font-family: 'FragmentMono';
+    src: local('☺'), url('fonts/FragmentMono-Regular.woff') format('woff');
+  }
 
   /* Base Page Styles */
     
@@ -59,6 +64,15 @@
     margin: 0px 10px 8px 10px;
     text-align: left;
   }
+    
+#ascii-art {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  font-family: 'FragmentMono', monospace;
+  pointer-events: none; /* makes it click-through */
+  z-index: 9999;
+}
 
   /* Expandable Elements */
 
@@ -185,6 +199,8 @@
   </footer>
         
 </div>
+    
+<div id="ascii-art">&nbsp;&nbsp;_<br>>' )<br>( ( \<br>&nbsp;''|\</div>
     
 <div id="hover-caption" class="hover-caption"></div>
 
