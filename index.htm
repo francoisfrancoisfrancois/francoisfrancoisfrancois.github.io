@@ -68,10 +68,10 @@
 #ascii-art {
   position: fixed;
   bottom: 8px;
-  right: 10px;
+  right: 12px;
   font-family: 'FragmentMono', monospace;
   pointer-events: none; /* makes it click-through */
-  z-index: 9999;
+  z-index: 0;
 }
 
   /* Expandable Elements */
@@ -116,7 +116,7 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 0; /* Important: should be behind main content */
+    z-index: 1; /* Important: should be behind main content */
     overflow: hidden;
     pointer-events: none;
   }
@@ -369,6 +369,35 @@
 
       observer.observe(footer);
     }
+      
+    const asciiArt = document.getElementById('ascii-art');
+
+    function updateAsciiVisibility() {
+      if (window.innerWidth <= 768) {
+        const contentHeight = document.querySelector('.content').offsetHeight;
+        if (contentHeight > window.innerHeight * 0.75) {
+          asciiArt.style.display = 'none';
+        } else {
+          asciiArt.style.display = '';
+        }
+      } else {
+        asciiArt.style.display = '';
+      }
+    }
+
+    // Trigger check on expandable click (already inside existing click logic)
+    document.body.addEventListener('click', (event) => {
+      if (event.target.classList.contains('expandable')) {
+        setTimeout(updateAsciiVisibility, 100); // Delay to wait for DOM expansion
+      }
+    });
+
+    // Also recheck on window resize (mobile orientation change etc.)
+    window.addEventListener('resize', updateAsciiVisibility);
+
+    // Initial check
+    updateAsciiVisibility();
+
   });
 </script>
 
