@@ -61,18 +61,32 @@
   }
 
   footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
     margin: 0px 10px 8px 10px;
+    position: relative;
     text-align: left;
   }
-    
-#ascii-art {
-  position: fixed;
-  bottom: 8px;
-  right: 12px;
-  font-family: 'FragmentMono', monospace;
-  pointer-events: none; /* makes it click-through */
-  z-index: 0;
-}
+
+  .footer-left {
+    display: relative;
+  }
+
+  .footer-right {
+    white-space: nowrap; /* Prevent line breaks */
+    position: relative;
+    font-family: 'FragmentMono', monospace;
+    pointer-events: none; /* makes it click-through */
+    bottom: 2px;
+    right: 2px;
+    z-index: 0;
+  }
+
+  /* Hides the ASCII Art when it's supposed to disappear */
+  .footer-right.hidden {
+    display: none;
+  }
 
   /* Expandable Elements */
 
@@ -192,15 +206,17 @@
   </main>
 
   <footer class="footer-container">
+        <div class="footer-left">
         <span class="expandable">About</span>
         <span class="hidden">This&thinsp;is&thinsp;all&thinsp;you&thinsp;need&thinsp;to&thinsp;know&thinsp;about&thinsp;me.</span>
         <span class="expandable">Contact</span>
         <span class="hidden">You&thinsp;can&thinsp;contact&thinsp;me&thinsp;via&thinsp;<a class="link hover-link" href="https://www.myportfolio.com" target="_blank">email</a>&thinsp;or&thinsp;through&thinsp;my&thinsp;<a class="link hover-link" href="https://www.myportfolio.com" target="_blank">instagram</a>.</span>
+        </div>
+      
+        <div class="footer-right">&nbsp;&nbsp;_<br>>' )<br>( ( \<br>&nbsp;''|\</div>
   </footer>
         
 </div>
-    
-<div id="ascii-art">&nbsp;&nbsp;_<br>>' )<br>( ( \<br>&nbsp;''|\</div>
     
 <div id="hover-caption" class="hover-caption"></div>
 
@@ -224,7 +240,6 @@
       });
     }
 
-    // Setup hover/touch trigger
     function setupHoverTrigger(selector, imageId) {
       const trigger = document.querySelector(selector);
       if (!trigger) return;
@@ -235,25 +250,15 @@
       if (isTouchDevice) {
         trigger.addEventListener('click', (e) => {
           e.preventDefault();
-
           const isVisible = hoverImage.classList.contains('show-image');
-
-          // Hide all images
           document.querySelectorAll('.hover-image').forEach(img => img.classList.remove('show-image'));
-
-          // Toggle this one
           if (!isVisible) {
             hoverImage.classList.add('show-image');
           }
         });
       } else {
-        trigger.addEventListener('mouseenter', () => {
-          applyHoverEffect(trigger, imageId);
-        });
-
-        trigger.addEventListener('mouseleave', () => {
-          hoverImage.classList.remove('show-image');
-        });
+        trigger.addEventListener('mouseenter', () => applyHoverEffect(trigger, imageId));
+        trigger.addEventListener('mouseleave', () => hoverImage.classList.remove('show-image'));
       }
     }
 
@@ -261,7 +266,6 @@
     setupHoverTrigger('.type-trigger', 'hoverImageType');
     setupHoverTrigger('.book-trigger', 'hoverImageBook');
 
-    // Hide image when clicking outside (on touch devices only)
     if (isTouchDevice) {
       document.body.addEventListener('click', (e) => {
         const isTrigger = e.target.closest('.trigger');
@@ -271,14 +275,13 @@
       });
     }
 
-    // Track mouse move to enable hover
     function onMouseMove() {
       mouseMoved = true;
       window.removeEventListener('mousemove', onMouseMove);
     }
     window.addEventListener('mousemove', onMouseMove);
 
-    // Caption Logic
+    // Caption logic
     const hoverCaption = document.getElementById('hover-caption');
     document.querySelectorAll('.hover-link, .trigger').forEach(el => {
       el.addEventListener('mouseenter', () => {
@@ -289,13 +292,11 @@
         }
       });
       el.addEventListener('mouseleave', () => {
-        if (hoverCaption) {
-          hoverCaption.classList.remove('show');
-        }
+        hoverCaption.classList.remove('show');
       });
     });
 
-    // Expandable content logic
+    // Expandable logic
     document.body.addEventListener('click', (event) => {
       if (event.target.classList.contains('expandable')) {
         const expandable = event.target;
@@ -322,6 +323,11 @@
             } else {
               newExpandables.forEach(el => el.classList.remove('no-hover'));
             }
+
+            // ✅ Only check visibility if inside the footer
+            if (expandable.closest('footer')) {
+              checkAsciiArtVisibility();
+            }
           };
 
           if (!isTouchDevice) {
@@ -337,14 +343,12 @@
       }
     });
 
-    // Expandables on touch
+    // Touch feedback for expandables
     document.querySelectorAll('.expandable').forEach(item => {
       if (isTouchDevice) {
         item.addEventListener('touchstart', () => {
           item.classList.add('hover-effect');
-          setTimeout(() => {
-            item.classList.remove('hover-effect');
-          }, 100);
+          setTimeout(() => item.classList.remove('hover-effect'), 100);
         });
       }
     });
@@ -358,11 +362,9 @@
         for (let entry of entries) {
           const newHeight = entry.contentRect.height;
           const heightDiff = newHeight - previousHeight;
-
           if (heightDiff > 0) {
             window.scrollBy(0, heightDiff);
           }
-
           previousHeight = newHeight;
         }
       });
@@ -370,39 +372,31 @@
       observer.observe(footer);
     }
       
-    function checkAsciiArtVisibility() {
-      const asciiArt = document.getElementById('ascii-art');
-      const content = document.querySelector('.content');
-      const footer = document.querySelector('footer');
-      const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    const left = document.querySelector('.footer-left');
+    const right = document.querySelector('.footer-right');
 
-      if (!asciiArt || !content || !isMobile) {
-        asciiArt.style.display = '';
-        return;
-      }
+    function checkOverlap() {
+      const leftRect = left.getBoundingClientRect();
+      const rightRect = right.getBoundingClientRect();
 
-      const contentHeight = content.offsetHeight;
-      const viewportHeight = window.innerHeight;
+      const overlap = !(leftRect.right < rightRect.left || 
+                        leftRect.left > rightRect.right || 
+                        leftRect.bottom < rightRect.top || 
+                        leftRect.top > rightRect.bottom);
 
-      const tooTall = contentHeight > viewportHeight * 0.75;
-
-      // Only look for .highlighted *within* the footer
-      const anyFooterExpanded = footer && footer.querySelector('.highlighted');
-
-      if (tooTall || anyFooterExpanded) {
-        asciiArt.style.display = 'none';
+      if (overlap) {
+        right.style.visibility = 'hidden';
       } else {
-        asciiArt.style.display = '';
+        right.style.visibility = 'visible';
       }
     }
 
-    window.addEventListener('resize', checkAsciiArtVisibility);
-    document.body.addEventListener('click', () => {
-      setTimeout(checkAsciiArtVisibility, 100); // wait for class changes
-    });
-
-    document.addEventListener('DOMContentLoaded', checkAsciiArtVisibility);
-
+    // Re-check whenever layout changes
+    window.addEventListener('resize', checkOverlap);
+    const observer = new ResizeObserver(checkOverlap);
+    observer.observe(left);
+    observer.observe(right);
+      
   });
 </script>
 
