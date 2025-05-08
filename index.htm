@@ -99,14 +99,14 @@
     cursor: pointer;
     text-decoration: none;
     box-shadow: inset 0 -1.06em 0 #B4D9FD;
-    transition: box-shadow 0.2s;
+    transition: box-shadow 0.1s;
   }
 
   .expandable:hover,
   .expandable.hover-effect {
-    color: #FFFDFA;
-    box-shadow: inset 0 -1.06em 0 #FDB4D9;
-    transition: box-shadow 0.2s;
+    color: #fe0000;
+    box-shadow: inset 0 -1.06em 0 #fdfe02;
+    transition: box-shadow 0.1s;
   }
 
   .expandable.clicked {
@@ -220,12 +220,12 @@
         <span class="hidden">You&thinsp;can&thinsp;contact&thinsp;me&thinsp;via&thinsp;<a class="link hover-link" href="https://www.myportfolio.com" target="_blank">email</a>&thinsp;or&thinsp;through&thinsp;my&thinsp;<a class="link hover-link" href="https://www.myportfolio.com" target="_blank">instagram</a>.</span>
         </div>
       
-        <div class="footer-right">
-          &nbsp;&nbsp;_<br>
-          &lt;' )<br>
-          ( ( \<br>
-          &nbsp;''|\
-        </div>
+<div class="footer-right" id="asciiBird">
+  &nbsp;&nbsp;_<br>
+  &lt;' )<br>
+  ( ( \<br>
+  &nbsp;''|\
+</div>
   </footer>
         
 </div>
@@ -421,6 +421,30 @@
     checkOverlap();
       
   });
+</script>
+    
+<script>
+  const birdOpen = `&nbsp;&nbsp;_<br>&lt;' )<br>( ( \\<br>&nbsp;''|\\`;
+  const birdClosed = `&nbsp;&nbsp;_<br>&lt;ˉ )<br>( ( \\<br>&nbsp;''|\\`;
+
+  const birdElement = document.getElementById('asciiBird');
+
+  function blinkBird() {
+    birdElement.innerHTML = birdClosed;
+    setTimeout(() => {
+      birdElement.innerHTML = birdOpen;
+    }, 150); // Blink lasts 150 milliseconds
+  }
+
+  function scheduleBlink() {
+    const nextBlinkIn = Math.random() * 5000 + 3000; // 3–8 seconds
+    setTimeout(() => {
+      blinkBird();
+      scheduleBlink(); // Schedule the next blink
+    }, nextBlinkIn);
+  }
+
+  document.addEventListener('DOMContentLoaded', scheduleBlink);
 </script>
 
 </body>
