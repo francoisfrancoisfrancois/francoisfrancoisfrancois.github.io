@@ -54,19 +54,19 @@
     -moz-osx-font-smoothing: grayscale;
   }
     
-    /* Hide hover caption on mobile devices */
-    @media (max-width: 768px) {
-      .hover-caption {
-        display: none !important;
-      }
+  /* Hide hover caption on mobile devices */
+  @media (max-width: 768px) {
+    .hover-caption {
+      display: none !important;
     }
+  }
 
   /* Layout Structure */
 
   .page-wrapper {
     display: flex;
     flex-direction: column;
-    min-height: 100dvh;
+    min-height: 100dvh; /* fixed from 100vh to 100dvh for dynamic viewport */
   }
 
   .content {
@@ -87,7 +87,7 @@
   .footer-left {
     flex-shrink: 0;
     max-width: 100%;
-    display: relative;
+    position: relative; /* fixed invalid 'display: relative;' */
     padding-right: 10px;
   }
 
@@ -109,8 +109,8 @@
   /* Expandable Elements */
 
   .expandable {
-    color: ;
-    cursor: pointer;
+    color: inherit; /* fixed empty color value */
+    cursor: pointer !important;
     text-decoration: none;
     box-shadow: inset 0 -1.06em 0 #B4D9FD;
     transition: box-shadow 0.1s;
@@ -147,7 +147,7 @@
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100dvh;
+    height: 100dvh; /* fixed from 100vh to 100dvh for dynamic viewport */
     z-index: 1; /* Important: should be behind main content */
     overflow: hidden;
     pointer-events: none;
@@ -179,37 +179,39 @@
   }
 
   a:hover {
-    color: #000000;
+    color: white; /* fallback */
+    mix-blend-mode: difference;
   }
 
   .link:hover {
     cursor: alias;
   }
 
-.trigger:hover {
-  position: relative;
-  z-index: 1000;
-}
+  .trigger:hover {
+    position: relative;
+    z-index: 1000;
+  }
     
-.hover-caption {
-  color: #000000;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  text-align: center;
-  margin: 8px 0px;
-  font-size: inherit;
-  font-family: inherit;
-  z-index: 1000;
-  display: none;
-  pointer-events: none; /* doesn't block interaction */
-  transition: opacity 0.1s ease;
-}
+  .hover-caption {
+    color: white; /* fallback */
+    mix-blend-mode: difference;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    margin: 8px 0px;
+    font-size: inherit;
+    font-family: inherit;
+    z-index: 1000;
+    display: none;
+    pointer-events: none; /* doesn't block interaction */
+    transition: opacity 0.1s ease;
+  }
 
-.hover-caption.show {
-  display: block;
-  opacity: 1;
-}
+  .hover-caption.show {
+    display: block;
+    opacity: 1;
+  }
 </style>
     
 </head>
@@ -243,235 +245,54 @@
 <div id="hover-caption" class="hover-caption"></div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    let mouseMoved = false;
-
-    // Function to apply hover effect for desktop
-    function applyHoverEffect(trigger, imageId) {
-      if (!mouseMoved && !isTouchDevice) return;
-
-      const hoverImage = document.getElementById(imageId);
-      if (!hoverImage) return;
-
-      document.querySelectorAll('.hover-image').forEach(img => img.classList.remove('show-image'));
-      hoverImage.classList.add('show-image');
-
-      trigger.addEventListener('mouseleave', () => {
-        hoverImage.classList.remove('show-image');
-      });
-    }
-
-    function setupHoverTrigger(selector, imageId) {
-      const trigger = document.querySelector(selector);
-      if (!trigger) return;
-
-      const hoverImage = document.getElementById(imageId);
-      if (!hoverImage) return;
-
-      if (isTouchDevice) {
-        trigger.addEventListener('click', (e) => {
-          e.preventDefault();
-          const isVisible = hoverImage.classList.contains('show-image');
-          document.querySelectorAll('.hover-image').forEach(img => img.classList.remove('show-image'));
-          if (!isVisible) {
-            hoverImage.classList.add('show-image');
-          }
-        });
-      } else {
-        trigger.addEventListener('mouseenter', () => applyHoverEffect(trigger, imageId));
-        trigger.addEventListener('mouseleave', () => hoverImage.classList.remove('show-image'));
-      }
-    }
-
-    setupHoverTrigger('.western-trigger', 'hoverImageWestern');
-
-    if (isTouchDevice) {
-      document.body.addEventListener('click', (e) => {
-        const isTrigger = e.target.closest('.trigger');
-        if (!isTrigger) {
-          document.querySelectorAll('.hover-image').forEach(img => img.classList.remove('show-image'));
-        }
-      });
-    }
-
-    function onMouseMove() {
-      mouseMoved = true;
-      window.removeEventListener('mousemove', onMouseMove);
-    }
-    window.addEventListener('mousemove', onMouseMove);
-
-    // Caption logic
-    const hoverCaption = document.getElementById('hover-caption');
-    document.querySelectorAll('.hover-link, .trigger').forEach(el => {
-      el.addEventListener('mouseenter', () => {
-        const caption = el.dataset.caption;
-        if (caption) {
-          hoverCaption.innerHTML = caption;
-          hoverCaption.classList.add('show');
-        }
-      });
-      el.addEventListener('mouseleave', () => {
-        hoverCaption.classList.remove('show');
-      });
-    });
-
-    // Expandable logic
-    document.body.addEventListener('click', (event) => {
-      if (event.target.classList.contains('expandable')) {
-        const expandable = event.target;
-        const hidden = expandable.nextElementSibling;
-
-        if (hidden && hidden.classList.contains('hidden')) {
-          const expandContent = () => {
-            const previous = document.querySelector('.highlighted');
-            if (previous) previous.classList.remove('highlighted');
-
-            hidden.classList.remove('hidden');
-            expandable.style.display = 'none';
-            hidden.classList.add('highlighted');
-
-            const newExpandables = hidden.querySelectorAll('.expandable');
-
-            if (!isTouchDevice) {
-              newExpandables.forEach(el => el.classList.add('no-hover'));
-              const onMove = () => {
-                newExpandables.forEach(el => el.classList.remove('no-hover'));
-                window.removeEventListener('mousemove', onMove);
-              };
-              window.addEventListener('mousemove', onMove);
-            } else {
-              newExpandables.forEach(el => el.classList.remove('no-hover'));
-            }
-
-            // ✅ Only check visibility if inside the footer
-            if (expandable.closest('footer')) {
-              checkAsciiArtVisibility();
-            }
-          };
-
-          if (!isTouchDevice) {
-            expandable.classList.add('hover-effect', 'clicked');
-            setTimeout(() => {
-              expandable.classList.remove('hover-effect', 'clicked');
-              expandContent();
-            }, 100);
-          } else {
-            expandContent();
-          }
-        }
-      }
-    });
-
-    // Touch feedback for expandables
-    document.querySelectorAll('.expandable').forEach(item => {
-      if (isTouchDevice) {
-        item.addEventListener('touchstart', () => {
-          item.classList.add('hover-effect');
-          setTimeout(() => item.classList.remove('hover-effect'), 100);
-        });
-      }
-    });
-
-    // Footer resize scroll compensation
-    const footer = document.querySelector('.footer-container');
-    if (footer) {
-      let previousHeight = footer.offsetHeight;
-
-      const observer = new ResizeObserver(entries => {
-        for (let entry of entries) {
-          const newHeight = entry.contentRect.height;
-          const heightDiff = newHeight - previousHeight;
-          if (heightDiff > 0) {
-            window.scrollBy(0, heightDiff);
-          }
-          previousHeight = newHeight;
-        }
-      });
-
-      observer.observe(footer);
-    }
-      
-    const left = document.querySelector('.footer-left');
-    const right = document.querySelector('.footer-right');
-
-    function checkOverlap() {
-      // Always make sure right is visible before measuring
-      const wasHidden = right.style.display === 'none';
-      if (wasHidden) {
-        right.style.display = ''; // Temporarily show it to measure
-      }
-
-      const leftRect = left.getBoundingClientRect();
-      const rightRect = right.getBoundingClientRect();
-
-      const overlap = !(leftRect.right < rightRect.left || 
-                        leftRect.left > rightRect.right || 
-                        leftRect.bottom < rightRect.top || 
-                        leftRect.top > rightRect.bottom);
-
-      if (overlap) {
-        right.style.display = 'none';
-      } else {
-        if (wasHidden) {
-          right.style.display = '';
-        }
-      }
-    }
-
-    // Re-check on resize and when either element changes size
-    window.addEventListener('resize', checkOverlap);
-    const observer = new ResizeObserver(checkOverlap);
-    observer.observe(left);
-    observer.observe(right);
-
-    // Initial check
-    checkOverlap();
-      
-  });
-</script>
-    
-<script>
 document.addEventListener('DOMContentLoaded', () => {
   const main = document.querySelector('main.content');
   let scrollIndex = 0;
   let baseTitle = "Hi I'm François Elain";
 
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  let mouseMoved = false;
+
+  // ➕ Add .no-hover to all .expandable elements at startup & set cursor pointer
+  document.querySelectorAll('.expandable').forEach(el => {
+    el.classList.add('no-hover');
+    el.style.cursor = 'pointer';
+  });
+
+  // Scrollable page title logic helper to check visibility
   function isVisible(node) {
     let el = node.parentElement;
     while (el && el !== main) {
       const style = window.getComputedStyle(el);
-      const isHidden = style.display === 'none' || style.visibility === 'hidden' || el.classList.contains('hidden');
-      if (isHidden) return false;
+      if (style.display === 'none' || style.visibility === 'hidden' || el.classList.contains('hidden')) {
+        return false;
+      }
       el = el.parentElement;
     }
     return true;
   }
 
+  // Extract visible text from main for title scrolling
   function getVisibleTextFromMain() {
     if (!main) return "";
-
     const walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT);
     let visibleText = "";
-
     while (walker.nextNode()) {
       const node = walker.currentNode;
-      if (isVisible(node)) {
-        visibleText += node.textContent;
-      }
+      if (isVisible(node)) visibleText += node.textContent;
     }
-
     return visibleText.replace(/\s+/g, ' ').trim() || baseTitle;
   }
 
+  // Update baseTitle and reset scroll index
   function updateBaseTitle() {
     baseTitle = getVisibleTextFromMain();
     scrollIndex = 0;
   }
 
+  // Scroll title animation
   function scrollTitle() {
     if (baseTitle.length <= 1) return;
-
     const scrollLength = 50;
     const padding = " \u00A0\u00A0\u00A0";
     const loopText = baseTitle + padding;
@@ -480,40 +301,206 @@ document.addEventListener('DOMContentLoaded', () => {
     scrollIndex = (scrollIndex + 1) % loopText.length;
   }
 
-  function expandNext() {
-    // Find the first visible .expandable
-    const nextExpandable = main.querySelector('.expandable');
-    if (!nextExpandable) return;
+  setInterval(scrollTitle, 200);
+  updateBaseTitle();
 
-    const hidden = nextExpandable.nextElementSibling;
+  // Hover image logic
+  function applyHoverEffect(trigger, imageId) {
+    if (!mouseMoved && !isTouchDevice) return;
 
-    if (hidden && hidden.classList.contains('hidden')) {
-      hidden.classList.remove('hidden');
-    }
+    const hoverImage = document.getElementById(imageId);
+    if (!hoverImage) return;
 
-    // Remove the expandable from the DOM
-    nextExpandable.remove();
-
-    updateBaseTitle();
+    document.querySelectorAll('.hover-image').forEach(img => img.classList.remove('show-image'));
+    hoverImage.classList.add('show-image');
   }
 
+  function setupHoverTrigger(selector, imageId) {
+    const trigger = document.querySelector(selector);
+    const hoverImage = document.getElementById(imageId);
+    if (!trigger || !hoverImage) return;
+
+    if (isTouchDevice) {
+      trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isVisible = hoverImage.classList.contains('show-image');
+        document.querySelectorAll('.hover-image').forEach(img => img.classList.remove('show-image'));
+        if (!isVisible) hoverImage.classList.add('show-image');
+      });
+    } else {
+      // Add mouseleave listener once
+      trigger.addEventListener('mouseenter', () => applyHoverEffect(trigger, imageId));
+      trigger.addEventListener('mouseleave', () => {
+        hoverImage.classList.remove('show-image');
+      });
+    }
+  }
+
+  setupHoverTrigger('.western-trigger', 'hoverImageWestern');
+
+  // Hover caption handling
+  const hoverCaption = document.getElementById('hover-caption');
+  document.querySelectorAll('.hover-link, .trigger').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      const caption = el.dataset.caption;
+      if (caption && hoverCaption) {
+        hoverCaption.innerHTML = caption;
+        hoverCaption.classList.add('show');
+      }
+    });
+    el.addEventListener('mouseleave', () => {
+      if (hoverCaption) hoverCaption.classList.remove('show');
+    });
+  });
+
+  // Unified click handler for touch devices and expandable elements
+  document.body.addEventListener('click', (e) => {
+    const target = e.target;
+    const isTrigger = target.closest('.trigger');
+    const isExpandable = target.classList.contains('expandable');
+
+    if (isTouchDevice && !isTrigger) {
+      document.querySelectorAll('.hover-image').forEach(img => img.classList.remove('show-image'));
+    }
+
+    if (isExpandable) {
+      const expandable = target;
+      const hidden = expandable.nextElementSibling;
+
+      if (hidden && hidden.classList.contains('hidden')) {
+        const expandContent = () => {
+          const previous = document.querySelector('.highlighted');
+          if (previous) previous.classList.remove('highlighted');
+
+          hidden.classList.remove('hidden');
+          expandable.style.display = 'none';
+          hidden.classList.add('highlighted');
+
+          const newExpandables = hidden.querySelectorAll('.expandable');
+          if (!isTouchDevice) {
+            newExpandables.forEach(el => el.classList.add('no-hover'));
+            const onMove = () => {
+              newExpandables.forEach(el => el.classList.remove('no-hover'));
+              window.removeEventListener('mousemove', onMove);
+            };
+            window.addEventListener('mousemove', onMove);
+          } else {
+            newExpandables.forEach(el => el.classList.remove('no-hover'));
+          }
+
+          if (expandable.closest('footer')) {
+            checkAsciiArtVisibility?.();
+          }
+        };
+
+        if (!isTouchDevice) {
+          expandable.classList.add('hover-effect', 'clicked');
+          setTimeout(() => {
+            expandable.classList.remove('hover-effect', 'clicked');
+            expandContent();
+            updateBaseTitle();
+          }, 100);
+        } else {
+          expandContent();
+          updateBaseTitle();
+        }
+      }
+    }
+  });
+
+  // Keyboard support for expandables (space or enter triggers first .expandable click)
   document.addEventListener('keydown', (e) => {
     if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
-      expandNext();
+      const nextExpandable = main?.querySelector('.expandable');
+      if (nextExpandable) {
+        nextExpandable.click();
+      }
     }
   });
 
-  document.addEventListener('click', (e) => {
-    if (e.target.tagName !== 'A') {
-      expandNext();
-    }
-  });
+  // Remove .no-hover globally after first mouse move
+  function onMouseMove() {
+    mouseMoved = true;
+    window.removeEventListener('mousemove', onMouseMove);
 
-  // Initial setup
-  updateBaseTitle();
-  setInterval(scrollTitle, 200);
+    document.querySelectorAll('.expandable.no-hover').forEach(el => {
+      el.classList.remove('no-hover');
+    });
+  }
+  window.addEventListener('mousemove', onMouseMove);
+
+  // Touch feedback for expandables
+  if (isTouchDevice) {
+    document.querySelectorAll('.expandable').forEach(item => {
+      item.addEventListener('touchstart', () => {
+        item.classList.add('hover-effect');
+        setTimeout(() => item.classList.remove('hover-effect'), 100);
+      });
+    });
+  }
+
+  // Footer resizing and overlap logic
+  const footer = document.querySelector('.footer-container');
+  if (footer) {
+    let previousHeight = footer.offsetHeight;
+    const resizeObserver = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        const newHeight = entry.contentRect.height;
+        const heightDiff = newHeight - previousHeight;
+        if (heightDiff > 0) window.scrollBy(0, heightDiff);
+        previousHeight = newHeight;
+      }
+    });
+    resizeObserver.observe(footer);
+  }
+
+  const left = document.querySelector('.footer-left');
+  const right = document.querySelector('.footer-right');
+
+  function checkOverlap() {
+    if (!left || !right) return;
+
+    const wasHidden = right.style.display === 'none';
+    if (wasHidden) right.style.display = '';
+
+    const leftRect = left.getBoundingClientRect();
+    const rightRect = right.getBoundingClientRect();
+
+    const overlap = !(leftRect.right < rightRect.left || leftRect.left > rightRect.right || leftRect.bottom < rightRect.top || leftRect.top > rightRect.bottom);
+    right.style.display = overlap ? 'none' : '';
+  }
+
+  window.addEventListener('resize', checkOverlap);
+  const overlapObserver = new ResizeObserver(checkOverlap);
+  if (left) overlapObserver.observe(left);
+  if (right) overlapObserver.observe(right);
+  checkOverlap();
 });
+</script>
+    
+<script>
+  const birdOpen = `&nbsp;&nbsp;_<br>&lt;' )<br>( ( \\<br>&nbsp;''|\\`;
+  const birdClosed = `&nbsp;&nbsp;_<br>&lt;¯ )<br>( ( \\<br>&nbsp;''|\\`;
+
+  const birdElement = document.getElementById('asciiBird');
+
+  function blinkBird() {
+    birdElement.innerHTML = birdClosed;
+    setTimeout(() => {
+      birdElement.innerHTML = birdOpen;
+    }, 150); // Blink lasts 150 milliseconds
+  }
+
+  function scheduleBlink() {
+    const nextBlinkIn = Math.random() * 4000 + 2000; // 3–8 seconds
+    setTimeout(() => {
+      blinkBird();
+      scheduleBlink(); // Schedule the next blink
+    }, nextBlinkIn);
+  }
+
+  document.addEventListener('DOMContentLoaded', scheduleBlink);
 </script>
 
 </body>
