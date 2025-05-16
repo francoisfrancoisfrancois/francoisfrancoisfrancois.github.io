@@ -432,36 +432,88 @@
 </script>
     
 <script>
-  const birdOpen = `&nbsp;&nbsp;_<br>&lt;' )<br>( ( \\<br>&nbsp;''|\\`;
-  const birdClosed = `&nbsp;&nbsp;_<br>&lt;¯ )<br>( ( \\<br>&nbsp;''|\\`;
+document.addEventListener('DOMContentLoaded', () => {
+  const main = document.querySelector('main.content');
+  let scrollIndex = 0;
+  let baseTitle = "Hi I'm François Elain";
 
-  const birdElement = document.getElementById('asciiBird');
-
-  function blinkBird() {
-    birdElement.innerHTML = birdClosed;
-    setTimeout(() => {
-      birdElement.innerHTML = birdOpen;
-    }, 150); // Blink lasts 150 milliseconds
+  function isVisible(node) {
+    let el = node.parentElement;
+    while (el && el !== main) {
+      const style = window.getComputedStyle(el);
+      const isHidden = style.display === 'none' || style.visibility === 'hidden' || el.classList.contains('hidden');
+      if (isHidden) return false;
+      el = el.parentElement;
+    }
+    return true;
   }
 
-  function scheduleBlink() {
-    const nextBlinkIn = Math.random() * 4000 + 2000; // 3–8 seconds
-    setTimeout(() => {
-      blinkBird();
-      scheduleBlink(); // Schedule the next blink
-    }, nextBlinkIn);
+  function getVisibleTextFromMain() {
+    if (!main) return "";
+
+    const walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT);
+    let visibleText = "";
+
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      if (isVisible(node)) {
+        visibleText += node.textContent;
+      }
+    }
+
+    return visibleText.replace(/\s+/g, ' ').trim() || baseTitle;
   }
 
-  document.addEventListener('DOMContentLoaded', scheduleBlink);
-</script>
-    
-<script>
-(function titleScroller(text) {
-    document.title = text;
-    setTimeout(function () {
-        titleScroller(text.substr(1) + text.substr(0, 1));
-    }, 350);
-}(" Hi I'm François Elain, a 28-year-old designer based in Brest."));
+  function updateBaseTitle() {
+    baseTitle = getVisibleTextFromMain();
+    scrollIndex = 0;
+  }
+
+  function scrollTitle() {
+    if (baseTitle.length <= 1) return;
+
+    const scrollLength = 50;
+    const padding = " \u00A0\u00A0\u00A0";
+    const loopText = baseTitle + padding;
+    const title = loopText.substring(scrollIndex, scrollIndex + scrollLength);
+    document.title = title;
+    scrollIndex = (scrollIndex + 1) % loopText.length;
+  }
+
+  function expandNext() {
+    // Find the first visible .expandable
+    const nextExpandable = main.querySelector('.expandable');
+    if (!nextExpandable) return;
+
+    const hidden = nextExpandable.nextElementSibling;
+
+    if (hidden && hidden.classList.contains('hidden')) {
+      hidden.classList.remove('hidden');
+    }
+
+    // Remove the expandable from the DOM
+    nextExpandable.remove();
+
+    updateBaseTitle();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      expandNext();
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (e.target.tagName !== 'A') {
+      expandNext();
+    }
+  });
+
+  // Initial setup
+  updateBaseTitle();
+  setInterval(scrollTitle, 200);
+});
 </script>
 
 </body>
