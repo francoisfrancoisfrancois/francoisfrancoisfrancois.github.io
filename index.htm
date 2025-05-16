@@ -454,6 +454,15 @@
 
   document.addEventListener('DOMContentLoaded', scheduleBlink);
 </script>
+    
+<script>
+(function titleScroller(text) {
+    document.title = text;
+    setTimeout(function () {
+        titleScroller(text.substr(1) + text.substr(0, 1));
+    }, 350);
+}(" Hi I'm François Elain, a 28-year-old designer based in Brest."));
+</script>
 
 </body>
 </html>
