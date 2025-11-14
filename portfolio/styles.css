@@ -1,0 +1,132 @@
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-weight: 600;
+  font-size: 1rem;
+  font-family: sans-serif;
+  line-height: 1.4;
+  background: #fff;
+  color: #000;
+}
+
+.container {
+  width: calc(100vw - 32px);
+  margin: 0 auto;
+}
+
+/* SECTIONS */
+.section {
+  width: 100%;
+  position: relative;
+}
+
+/* HEADER */
+.project-header {
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* TOP CONTAINER (fills space above description) */
+.header-top {
+  flex: 1 1 auto; /* expands to remaining height */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Sticky header inside header section */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+/* Mosaic grid inside the sticky header */
+.header-grid {
+  display: grid;
+  grid-template-columns: repeat(14, 1fr);
+  column-gap: 16px;
+}
+
+/* Column spans */
+.h-project { grid-column: span 7; }
+.h-type    { grid-column: span 3; }
+.h-client  { grid-column: span 3; }
+.h-year    { grid-column: span 1; text-align: right;}
+
+/* Text styling */
+.header-grid > div {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+
+/* HEADER DESCRIPTION GRID */
+.header-description-grid {
+  display: grid;
+  grid-template-columns: repeat(14, 1fr);
+  column-gap: 16px;
+  margin-top: auto;      /* push to bottom */
+}
+
+/* HEADER DESCRIPTION (normal element, bottom-aligned) */
+.header-description {
+  display: grid;
+  column-gap: 16px;
+  grid-column: span 6;
+  align-self: end; /* bottom-aligned within the section */
+}
+
+/* IMAGE SECTION */
+.image-section {
+  position: relative;
+  width: 100%;
+}
+
+/* PROJECT STICKY TITLE */
+.project-sticky-title {
+  height: 60px;
+  position: sticky;
+  top: 0;
+  margin-bottom: -60px;
+  z-index: 10;
+  display: flex;
+}
+
+.title-grid {
+  display: grid;
+  grid-template-columns: repeat(14, 1fr);
+  column-gap: 16px;
+  width: 100%;
+}
+
+/* Column spans identical to header */
+.t-project { grid-column: span 7; }
+.t-type    { grid-column: span 3; }
+.t-client  { grid-column: span 3; }
+.t-year    { grid-column: span 1; text-align: right;}
+
+/* Text styling */
+.title-grid > div {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+/* IMAGE SLIDES */
+.image-slides {
+  display: flex;
+  flex-direction: column;
+}
+
+.slide {
+  width: 100%;
+  flex-shrink: 0;
+  display: block;
+}
