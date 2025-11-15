@@ -11,7 +11,7 @@
 
     /* FLUID TYPOGRAPHY */
   --font-size: clamp(0.175rem, 1.2vw, 1rem);    /* scales between mobile and desktop */
-  --font-size-small: clamp(0.75rem, 1vw, 0.875rem);
+  --font-size-small: clamp(0.175rem, 1vw, 0.875rem);
 
   /* FLUID SPACING */
   --padding: clamp(12px, 2vw, 16px);
