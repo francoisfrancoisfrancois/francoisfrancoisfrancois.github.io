@@ -224,7 +224,7 @@ body {
 }
 
 /* ===== SMALL MOBILE ===== */
-@media (max-width: 600px) {
+@media (max-width: 500px) {
   body{
     font-size: var(--font-size-small);
   }
