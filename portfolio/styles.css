@@ -9,10 +9,10 @@
   --font-size: 1rem;
   --font-weight: 600;
 
-    /* FLUID TYPOGRAPHY */
-  --font-size: clamp(0.875rem, 1.2vw, 1rem);    /* scales between mobile and desktop */
-  --font-size-small: clamp(0.7rem, 1vw, 0.875rem);
-
+  /* FLUID TYPOGRAPHY */
+  --font-size: clamp(0.875rem, 1.2vw, 1rem);        /* main text scales normally */
+  --font-size-small: clamp(0.65rem, 0.9vw, 0.875rem); /* description / small text shrinks more */
+  
   /* FLUID SPACING */
   --padding: clamp(12px, 2vw, 16px);
 
