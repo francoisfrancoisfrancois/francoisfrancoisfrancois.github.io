@@ -88,7 +88,7 @@ body {
   width: 100%;
 }
 
-/* IMAGE SECTION STICKY TITLE */
+/* Make sticky title text contrast over images */
 .project-sticky-title {
   height: 60px;
   position: sticky;
@@ -96,7 +96,11 @@ body {
   margin-bottom: -60px;
   z-index: 10;
   display: flex;
-  padding: 16px; /* uniform padding inside sticky */
+  padding: 16px;
+  color: #fff; /* white text for contrast */
+  mix-blend-mode: difference; /* negative / inverted effect */
+  filter: brightness(1.0) contrast(1.05) grayscale(100%);
+  pointer-events: none; /* optional, allows clicks to pass through */
 }
 
 .title-grid {
@@ -129,8 +133,28 @@ body {
 .slide {
   width: 100%;
   flex-shrink: 0;
-  display: block; /* prevents flex collapse for empty slides */
+  display: block;
+  position: relative; /* for ratio handling */
+  overflow: hidden;   /* crop overflowing content */
 }
+
+/* Maintain the ratio using padding-top trick */
+.slide::before {
+  content: "";
+  display: block;
+  padding-top: calc(0.625 * 100%); /* ratio = height/width */
+}
+
+/* Image styling */
+.slide img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* preserves aspect ratio, covers container */
+}
+
 
 /* Small screens (mobile) */
 @media (max-width: 768px) {
