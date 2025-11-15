@@ -74,7 +74,6 @@ body {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  min-height: max-content;
 }
 
 /* Sticky header inside header section */
@@ -112,7 +111,6 @@ body {
   column-gap: var(--padding);
   margin-top: auto;
   padding: var(--padding);
-  min-height: max-content;
 }
 
 .header-description {
