@@ -77,9 +77,15 @@ body {
 
 /* HEADER DESCRIPTION (grid item) */
 .header-description {
-  grid-column: span 7;
+  grid-column: span 6;
   align-self: end; /* bottom-aligned in section */
-  text-align: justify;
+  text-align: left;
+}
+
+.header-skills {
+  display: block;                /* ensures it’s on a separate line */
+  color: #ababab;                /* grey color */
+  text-align: left;            /* justification different from main text */
 }
 
 /* IMAGE SECTION */
@@ -118,8 +124,6 @@ body {
 
 /* Text styling */
 .title-grid > div {
-  color: #fff;
-  mix-blend-mode: exclusion;
   font-size: 1rem;
   font-weight: 600;
 }
@@ -171,4 +175,15 @@ body {
 
   /* Header description */
   .header-description { grid-column: span 14; }
+
+  .sticky-header {
+    position: relative;  /* also disable sticky for header section */
+    top: auto;
   }
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+
+  /* Header description */
+  .header-description { grid-column: span 10; }
+}
