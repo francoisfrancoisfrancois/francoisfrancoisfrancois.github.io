@@ -3,7 +3,7 @@
   /* Layout */
   --columns: 14;
   --gap: 16px;
-  --padding: 16px;
+  --padding: clamp(12px, 2vw, 16px);
 
   /* Typography */
   --font-size: 1rem;
@@ -11,10 +11,7 @@
 
   /* FLUID TYPOGRAPHY */
   --font-size: 1rem;    /* scales between mobile and desktop */
-  --font-size-small: clamp(0.6rem, 1vw, 1rem);
-
-  /* FLUID SPACING */
-  --padding: clamp(12px, 2vw, 16px);
+  --font-size-small: clamp(0.7rem, 1vw, 1rem);
 
   /* Layout */
   --columns: 14;
@@ -227,8 +224,12 @@ body {
 }
 
 /* ===== SMALL MOBILE ===== */
-@media (max-width: 400px) {
+@media (max-width: 600px) {
   body{
     font-size: var(--font-size-small);
+  }
+
+  .image-slides .slide:first-child {
+    margin-top: calc(-1 * (var(--font-size-small) + 2 * var(--padding)));
   }
 }
