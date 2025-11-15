@@ -11,13 +11,10 @@
 
   /* FLUID TYPOGRAPHY */
   --font-size: clamp(0.8rem, 1.2vw, 1rem);    /* scales between mobile and desktop */
-  --font-size-small: clamp(0.75rem, 1vw, 0.875rem);
+  --font-size-small: clamp(0.75rem, 1vw, 0.8rem);
 
   /* FLUID SPACING */
   --padding: clamp(12px, 2vw, 16px);
-
-  /* Sticky heights */
-  --sticky-height: clamp(48px, 6vw, 60px);
 
   /* Layout */
   --columns: 14;
