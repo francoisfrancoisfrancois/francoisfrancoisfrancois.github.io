@@ -10,7 +10,7 @@
   --font-weight: 600;
 
     /* FLUID TYPOGRAPHY */
-  --font-size: clamp(0.875rem, 1.2vw, 1rem);    /* scales between mobile and desktop */
+  --font-size: clamp(0.87rem, 1.2vw, 1rem);    /* scales between mobile and desktop */
   --font-size-small: clamp(0.75rem, 1vw, 0.875rem);
 
   /* FLUID SPACING */
