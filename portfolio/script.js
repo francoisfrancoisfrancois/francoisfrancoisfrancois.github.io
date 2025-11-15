@@ -1,4 +1,4 @@
-const PDF_RATIO = 850 / 1280; // ~0.665
+const PDF_RATIO = 800 / 1280; // ~0.625
 
 function resizeSections() {
   const vw = window.innerWidth;
