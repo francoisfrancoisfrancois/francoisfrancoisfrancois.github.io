@@ -10,7 +10,7 @@
   --font-weight: 600;
 
   /* FLUID TYPOGRAPHY */
-  --font-size: clamp(0.875rem, 1.5vw, 1rem);    /* scales between mobile and desktop */
+  --font-size: clamp(0.8rem, 1.2vw, 1rem);    /* scales between mobile and desktop */
   --font-size-small: clamp(0.75rem, 1vw, 0.875rem);
 
   /* FLUID SPACING */
@@ -126,10 +126,8 @@ body {
 
 /* Sticky title over images */
 .project-sticky-title {
-  height: var(--sticky-height);
   position: sticky;
   top: 0;
-  margin-bottom: calc(var(--sticky-height) * -1);
   z-index: 10;
   display: flex;
   padding: var(--padding);
@@ -164,6 +162,16 @@ body {
   overflow: hidden;
 }
 
+/* Only the first slide gets pulled up */
+.image-slides .slide:first-child {
+  margin-top: calc(-1 * (var(--font-size) + 2 * var(--padding)));
+}
+
+/* Ensure the first slide’s image fills its container */
+.image-slides .slide:first-child img {
+  object-fit: cover;
+}
+
 /* Maintain ratio */
 .slide::before {
   content: "";
@@ -182,36 +190,9 @@ body {
 
 /* ===== PROGRESSIVE HEADER DESCRIPTION ===== */
 
-/* Large desktop */
-@media (max-width: 1350px) and (min-width: 1226px) {
+
+@media (max-width: 900px) and (min-width: 701px) {
   .header-description { grid-column: span 7; }
-}
-
-/* Large desktop */
-@media (max-width: 1225px) and (min-width: 1101px) {
-  .header-description { grid-column: span 8; }
-}
-
-/* Desktop */
-@media (max-width: 1100px) and (min-width: 1001px) {
-  .header-description { grid-column: span 9; }
-}
-
-/* Desktop → tablet */
-@media (max-width: 1000px) and (min-width: 901px) {
-  .header-description { grid-column: span 10; }
-}
-
-@media (max-width: 900px) and (min-width: 801px) {
-  .header-description { grid-column: span 11; }
-}
-
-@media (max-width: 800px) and (min-width: 751px) {
-  .header-description { grid-column: span 12; }
-}
-
-@media (max-width: 750px) and (min-width: 701px) {
-  .header-description { grid-column: span 13; }
 }
 
 /* Small mobile */
