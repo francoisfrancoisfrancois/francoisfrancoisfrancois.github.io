@@ -1,27 +1,31 @@
-const PDF_RATIO = 800 / 1280; // 0.625
+const PDF_RATIO = 0.625;
 
 function resizeSections() {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
-  // Compute height based on PDF ratio but never exceed viewport height
-  const computeHeight = ratio => Math.min(vh, ratio * vw);
+  // Helper: compute ratio height limited by viewport
+  const ratioHeight = vw * PDF_RATIO;
 
-  // Resize header sections
-  document.querySelectorAll('.project-header.section').forEach(section => {
-    const ratio = parseFloat(section.dataset.ratio || PDF_RATIO);
-    section.style.height = `${computeHeight(ratio)}px`;
+  document.querySelectorAll('.project-header.section').forEach(header => {
+    // Temporarily remove height to get natural content height
+    header.style.height = '';
+    const contentHeight = header.scrollHeight;
+
+    // Choose the max of ratioHeight and contentHeight, but never exceed viewport
+    const finalHeight = Math.min(Math.max(ratioHeight, contentHeight), vh);
+
+    header.style.height = `${finalHeight}px`;
   });
 
-  // Resize each slide
+  // Slides keep ratio
   document.querySelectorAll('.image-section .slide').forEach(slide => {
     const ratio = parseFloat(slide.dataset.ratio || PDF_RATIO);
-    slide.style.height = `${computeHeight(ratio)}px`;
+    const slideHeight = Math.min(vh, vw * ratio);
+    slide.style.height = `${slideHeight}px`;
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  resizeSections();
-});
-
+// Run on load and resize
+window.addEventListener('load', resizeSections);
 window.addEventListener('resize', resizeSections);

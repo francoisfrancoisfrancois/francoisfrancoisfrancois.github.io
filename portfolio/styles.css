@@ -10,8 +10,8 @@
   --font-weight: 600;
 
     /* FLUID TYPOGRAPHY */
-  --font-size: clamp(0.75rem, 1.2vw, 1rem);       /* description text */
-  --font-size-small: clamp(0.625rem, 1vw, 0.875rem); /* skills text */
+  --font-size: clamp(0.875rem, 1.2vw, 1rem);    /* scales between mobile and desktop */
+  --font-size-small: clamp(0.75rem, 1vw, 0.875rem);
 
   /* FLUID SPACING */
   --padding: clamp(12px, 2vw, 16px);
@@ -26,6 +26,9 @@
   --color-bg: #fff;
   --color-text: #000;
   --color-skill: #ababab;
+
+  /* Sticky titles */
+  --sticky-height: 60px;
 
   /* Image/contrast effects */
   --blend-mode: difference;
@@ -59,10 +62,9 @@ body {
 
 /* HEADER */
 .project-header {
-  background-color: var(--color-bg);
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: auto; /* allow JS to set height */
   min-height: max-content;
 }
 
