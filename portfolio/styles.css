@@ -223,4 +223,8 @@ body {
   body{
     font-size: var(--font-size-small);
   }
+
+  .header-description {
+  font-size: var(--font-size-small);
+  }
 }
