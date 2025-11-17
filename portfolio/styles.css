@@ -83,14 +83,16 @@ body {
   display: grid;
   grid-template-columns: repeat(var(--columns), 1fr);
   column-gap: var(--padding);
-  padding: var(--padding);
+  padding-left: var(--padding);
+  padding-top: var(--padding);
+  padding-right: var(--padding);
 }
 
 /* Column spans */
-.h-project { grid-column: span 7;}
-.h-type    { grid-column: span 3;}
-.h-client  { grid-column: span 3;}
-.h-year    { grid-column: span 1; text-align: right;}
+.h-project { grid-column: span 7; margin-bottom: var(--padding);}
+.h-type    { grid-column: span 3; margin-bottom: var(--padding);}
+.h-client  { grid-column: span 3; margin-bottom: var(--padding);}
+.h-year    { grid-column: span 1; margin-bottom: var(--padding); text-align: right; }
 
 /* HEADER DESCRIPTION GRID */
 .header-description-grid {

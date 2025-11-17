@@ -1,30 +1,42 @@
-const PDF_RATIO = 800 / 1280; // ~0.625
+const RATIO_NARROW = 0.625; // height / width when viewport is tall/narrow
+const RATIO_WIDE   = 0.530; // height / width when viewport is short/wide
 
 function resizeSections() {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
+  const viewportRatio = vh / vw;
 
-  // Helper: compute ratio height limited by viewport
-  const ratioHeight = vw * PDF_RATIO;
+  // Helper: compute height based on viewport ratio rules
+  function computeHeight() {
+    if (viewportRatio > RATIO_NARROW) {
+      // viewport is tall/narrow → use narrow ratio
+      return vw * RATIO_NARROW;
+    } else if (viewportRatio < RATIO_WIDE) {
+      // viewport is wide/short → use wide ratio
+      return vw * RATIO_WIDE;
+    } else {
+      // in-between → fill viewport height
+      return vh;
+    }
+  }
 
+  const heightToApply = computeHeight();
+
+  // Apply to all project headers
   document.querySelectorAll('.project-header.section').forEach(header => {
-    // Temporarily remove height to get natural content height
-    header.style.height = '';
-    const contentHeight = header.scrollHeight;
-
-    // Choose the max of ratioHeight and contentHeight, but never exceed viewport
-    const finalHeight = Math.min(Math.max(ratioHeight, contentHeight), vh);
-
-    header.style.height = `${finalHeight}px`;
+    header.style.height = `${heightToApply}px`;
   });
 
-  // Slides keep ratio
+  // Apply to all image slides
   document.querySelectorAll('.image-section .slide').forEach(slide => {
-    const ratio = parseFloat(slide.dataset.ratio || PDF_RATIO);
-    const slideHeight = Math.min(vh, vw * ratio);
-    slide.style.height = `${slideHeight}px`;
+    // use data-ratio if you want per-slide overrides, else default to same logic
+    slide.style.height = `${heightToApply}px`;
   });
 }
+
+// Run on load and resize
+document.addEventListener('DOMContentLoaded', resizeSections);
+window.addEventListener('resize', resizeSections);
 
 /* ---------- Sticky-visible-when-stuck logic ---------- */
 
