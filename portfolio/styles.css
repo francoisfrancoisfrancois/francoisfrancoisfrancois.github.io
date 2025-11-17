@@ -11,7 +11,9 @@
 
   /* FLUID TYPOGRAPHY */
   --font-size: 1rem;    /* scales between mobile and desktop */
-  --font-size-small: clamp(0.7rem, 1vw, 1rem);
+  --font-size-medium: clamp(0.9rem, 1vw, 1rem);
+  --font-size-small: clamp(0.8rem, 1vw, 0.9rem);
+  --font-size-tiny: clamp(0.7rem, 1vw, 0.8rem);
 
   /* Layout */
   --columns: 14;
@@ -109,7 +111,13 @@ body {
   text-align: left;
 }
 
+.header-caption {
+  display: block;
+  text-align: left;
+}
+
 .header-skills {
+  padding-top: var(--padding);
   display: block;
   color: var(--color-skill);
   text-align: left;
@@ -226,12 +234,60 @@ body {
 }
 
 /* ===== SMALL MOBILE ===== */
-@media (max-width: 500px) {
+@media (max-width: 550px) {
+  body{
+    font-size: var(--font-size-medium);
+  }
+
+  .image-slides .slide:first-child {
+    margin-top: calc(-1 * (var(--font-size-medium) + 2 * var(--padding)));
+  }
+}
+
+/* ===== VERY SMALL MOBILE ===== */
+@media (max-width: 475px) {
   body{
     font-size: var(--font-size-small);
   }
 
   .image-slides .slide:first-child {
     margin-top: calc(-1 * (var(--font-size-small) + 2 * var(--padding)));
+  }
+}
+
+/* ===== TINY MOBILE ===== */
+@media (max-width: 425px) {
+  body{
+    font-size: var(--font-size-tiny);
+  }
+
+  .image-slides .slide:first-child {
+    margin-top: calc(-1 * (var(--font-size-tiny) + 2 * var(--padding)));
+  }
+}
+
+/* ===== RIDICULOUS MOBILE ===== */
+@media (max-width: 380px) {
+  .header-skills {
+    display: none;
+  }
+
+  .image-slides .slide:first-child {
+    margin-top: calc(-1 * (var(--font-size-tiny) + 2 * var(--padding)));
+  }
+}
+
+/* ===== JOKE OF A SCREEN ===== */
+@media (max-width: 340px) {
+  .header-skills {
+    display: none;
+  }
+
+  .header-caption {
+    display: none;
+  }
+
+  .image-slides .slide:first-child {
+    margin-top: calc(-1 * (var(--font-size-tiny) + 2 * var(--padding)));
   }
 }
