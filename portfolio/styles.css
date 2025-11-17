@@ -116,6 +116,11 @@ body {
   text-align: left;
 }
 
+.header-caption-short {
+  display: none;
+  text-align: left;
+}
+
 .header-skills {
   padding-top: var(--padding);
   display: block;
@@ -268,8 +273,16 @@ body {
 
 /* ===== RIDICULOUS MOBILE ===== */
 @media (max-width: 380px) {
-  .header-skills {
+  body{
+    font-size: var(--font-size-tiny);
+  }
+  
+  .header-caption {
     display: none;
+  }
+
+  .header-caption-short {
+    display: block;
   }
 
   .image-slides .slide:first-child {
@@ -279,12 +292,20 @@ body {
 
 /* ===== JOKE OF A SCREEN ===== */
 @media (max-width: 340px) {
+  body{
+    font-size: var(--font-size-tiny);
+  }
+
   .header-skills {
     display: none;
   }
 
   .header-caption {
     display: none;
+  }
+
+  .header-caption-short {
+    display: block;
   }
 
   .image-slides .slide:first-child {
