@@ -87,10 +87,10 @@ body {
 }
 
 /* Column spans */
-.h-project { grid-column: span 7; margin-bottom: var(--padding);}
-.h-type    { grid-column: span 3; margin-bottom: var(--padding);}
-.h-client  { grid-column: span 3; margin-bottom: var(--padding);}
-.h-year    { grid-column: span 1; text-align: right; }
+.h-project { grid-column: span 7;}
+.h-type    { grid-column: span 3;}
+.h-client  { grid-column: span 3;}
+.h-year    { grid-column: span 1; text-align: right;}
 
 /* HEADER DESCRIPTION GRID */
 .header-description-grid {
