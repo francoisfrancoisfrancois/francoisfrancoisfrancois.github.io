@@ -14,6 +14,7 @@
   --font-size-medium: clamp(0.9rem, 1vw, 1rem);
   --font-size-small: clamp(0.8rem, 1vw, 0.9rem);
   --font-size-tiny: clamp(0.7rem, 1vw, 0.8rem);
+  --font-size-micro: clamp(0.6rem, 1vw, 0.7rem);
 
   /* Layout */
   --columns: 14;
@@ -293,11 +294,11 @@ body {
 /* ===== JOKE OF A SCREEN ===== */
 @media (max-width: 340px) {
   body{
-    font-size: var(--font-size-tiny);
+    font-size: var(--font-size-micro);
   }
 
   .header-skills {
-    display: none;
+    display: block;
   }
 
   .header-caption {
@@ -309,6 +310,6 @@ body {
   }
 
   .image-slides .slide:first-child {
-    margin-top: calc(-1 * (var(--font-size-tiny) + 2 * var(--padding)));
+    margin-top: calc(-1 * (var(--font-size-micro) + 2 * var(--padding)));
   }
 }
