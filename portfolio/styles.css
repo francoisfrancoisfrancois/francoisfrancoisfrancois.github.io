@@ -37,7 +37,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  hyphens: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%; /* Disable auto-scaling */
@@ -50,6 +49,13 @@ body {
   line-height: 1.125;
   background: var(--color-bg);
   color: var(--color-text);
+  text-wrap: pretty;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+
+-webkit-hyphens: auto;
+   -moz-hyphens: auto;
+        hyphens: auto;
 }
 
 /* SECTIONS */
