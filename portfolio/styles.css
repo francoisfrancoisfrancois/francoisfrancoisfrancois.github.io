@@ -1,3 +1,8 @@
+  @font-face {
+    font-family: 'FOSS';
+    src: local('☺'), url('fonts/FOSS-Modern-Bold.woff2') format('woff2');
+  }
+
 /* VARIABLES */
 :root {
   /* Layout */
@@ -43,9 +48,8 @@
 }
 
 body {
-  font-weight: var(--font-weight);
   font-size: var(--font-size);
-  font-family: sans-serif;
+  font-family: 'FOSS', sans-serif;
   line-height: 1.125;
   background: var(--color-bg);
   color: var(--color-text);
@@ -218,6 +222,15 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* New slide type with no cropping */
+.slide-contain img {
+  object-fit: contain;
+  object-position: center;
+  width: 100%;
+  height: 100%;
+  background: #fff; /* ensures whitespace shows as white */
 }
 
 /* ===== PROGRESSIVE HEADER DESCRIPTION ===== */
