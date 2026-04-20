@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ASCII Rain — font-aware measurement</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Narrow', monospace;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    color: #000;
+    font-size: 18px;
+    text-align: left;
+    white-space: pre;
+    position: relative;
+  }
+
+  #rain, #text-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;      /* FIX: remove pre default margin */
+    padding: 0;     /* FIX: remove pre default padding */
+  }
+
+  #rain { z-index: 2; }
+  #text-layer { z-index: 1; color: black; background: white; }
+
+  .raindrop {
+    background: white;
+    display: inline-block;
+    line-height: inherit;
+  }
+
+  @font-face {
+    font-family: 'Narrow';
+    src: local('☺'), url('fonts/NewFont-Regular.woff') format('woff');
+    font-weight: 200;
+  }
+</style>
+</head>
+<body>
+<div id="text-layer"></div>
+<div id="rain"></div>
+
+<script>
+(async function() {
+  const fontSize = 18;
+  const minLineRatio = 1.2;
+  const frameMs = 80;
+  const baseDropProbability = 0.08;
+  const fontFamilySpec = "Narrow, monospace";
+  const fontLoadTimeoutMs = 2000;
+
+  const rainEl = document.getElementById('rain');
+  const textEl = document.getElementById('text-layer');
+
+  document.body.style.fontSize = fontSize + 'px';
+
+  if (document.fonts && document.fonts.ready) {
+    await Promise.race([document.fonts.ready, new Promise(resolve => setTimeout(resolve,fontLoadTimeoutMs))]);
+  } else { await new Promise(r=>setTimeout(r,50)); }
+
+  function measureCharWidth() {
+    const s = document.createElement('span');
+    s.textContent = 'W';
+    s.style.fontFamily = fontFamilySpec;
+    s.style.fontSize = fontSize + 'px';
+    s.style.position = 'absolute';
+    s.style.left = '-9999px';
+    s.style.top = '-9999px';
+    document.body.appendChild(s);
+    const w = s.getBoundingClientRect().width || fontSize;
+    document.body.removeChild(s);
+    return w;
+  }
+  const charWidth = measureCharWidth();
+
+  const minLineHeight = fontSize * minLineRatio;
+  let rows = Math.floor(window.innerHeight / minLineHeight);
+  if (rows < 1) rows = 1;
+  const lineHeight = window.innerHeight / rows;
+
+  [rainEl, textEl].forEach(el=>{
+    el.style.fontFamily = fontFamilySpec;
+    el.style.fontSize = fontSize + 'px';
+    el.style.height = window.innerHeight+'px';
+    el.style.width = window.innerWidth+'px';
+  });
+
+  let width=0, height=0;
+  let rainMatrix = [];
+
+  let rainState='resuming';
+  let dropProbability=baseDropProbability;
+  let resumeActiveWidth=2;
+  let resumeDirection=Math.random()<0.5?'ltr':'rtl';
+  let pauseTimerId=null, drizzleTimerId=null, drizzleIntensity=0;
+
+  const staticText = " Hi I’m François Elain, a 29-year-old free-lance designer based in Paris.";
+  const textRow = 1;
+  const textStartCol = 2;
+
+  function initMatrix(preserve=false) {
+    const newW = Math.max(1, Math.floor(window.innerWidth/charWidth));
+    const newH = Math.max(1, Math.floor(window.innerHeight/lineHeight));
+    const newM = Array.from({length:newH},()=>Array(newW).fill(' '));
+
+    if(preserve && rainMatrix){
+      const copyR = Math.min(height,newH);
+      const copyC = Math.min(width,newW);
+      for(let r=0;r<copyR;r++){
+        for(let c=0;c<copyC;c++){
+          const ch = rainMatrix[r][c];
+          if((ch==='⬭'||ch==='࿁') && r!==newH-1){ newM[r][c]=' '; } else { newM[r][c]=ch; }
+        }
+      }
+    }
+
+    width=newW;
+    height=newH;
+    rainMatrix=newM;
+  }
+
+  function matrixIsEmpty(){ return rainMatrix.every(r=>r.every(ch=>' '===ch)); }
+
+  function generateRain(){
+    for(let r=height-1;r>0;r--){
+      const above = rainMatrix[r-1];
+      const row = rainMatrix[r];
+      for(let c=0;c<width;c++) row[c]=above[c];
+    }
+
+    for(let c=0;c<width;c++){
+      if(rainState==='active') rainMatrix[0][c] = Math.random()<baseDropProbability?'|':' ';
+      else if(rainState==='resuming'){
+        const active = resumeDirection==='ltr'?c<resumeActiveWidth:c>=width-resumeActiveWidth;
+        rainMatrix[0][c] = active && Math.random()<baseDropProbability*0.7?'|':' ';
+      }
+      else if(rainState==='ending') rainMatrix[0][c] = Math.random()<dropProbability?'|':' ';
+      else if(rainState==='paused') rainMatrix[0][c]=' ';
+      else if(rainState==='drizzle') rainMatrix[0][c] = Math.random()<drizzleIntensity?'|':' ';
+    }
+
+    const lastRow = height-1;
+    for(let c=0;c<width;c++){
+      for(let r=0;r<lastRow;r++){
+        if(rainMatrix[r][c]==='⬭'||rainMatrix[r][c]==='࿁') rainMatrix[r][c]=' ';
+      }
+      if(rainMatrix[lastRow][c]==='|') rainMatrix[lastRow][c]=Math.random()<0.5?'⬭':'࿁';
+    }
+
+    if(rainState==='active' && Math.random()>0.99) rainState='ending';
+    if(rainState==='ending'){
+      dropProbability*=0.97;
+      if(dropProbability<0.01 && matrixIsEmpty()){
+        rainState='paused';
+        clearTimeout(pauseTimerId); clearInterval(drizzleTimerId);
+        pauseTimerId=setTimeout(()=>{
+          rainState='drizzle'; drizzleIntensity=0.0001;
+          drizzleTimerId=setInterval(()=>drizzleIntensity=Math.min(drizzleIntensity*1.3,0.0015),800);
+          setTimeout(()=>{ clearInterval(drizzleTimerId); drizzleTimerId=null; rainState='resuming'; resumeActiveWidth=0; dropProbability=baseDropProbability; },16000);
+        },10000+Math.random()*5000);
+      }
+    }
+    if(rainState==='resuming'){
+      resumeActiveWidth+=3;
+      if(resumeActiveWidth>=width) rainState='active';
+    }
+
+    render();
+  }
+
+  function render(){
+    // wrap each row in a div with exact lineHeight
+    rainEl.innerHTML = rainMatrix.map(r=>`<div style="height:${lineHeight}px;line-height:${lineHeight}px">${r.map(ch=>ch==='|'?'<span class="raindrop">|</span>':ch).join('')}</div>`).join('');
+    
+    const textM = Array.from({length:height},()=>Array(width).fill(' '));
+    for(let i=0;i<staticText.length;i++){
+      if(textRow<height && textStartCol+i<width) textM[textRow][textStartCol+i]=staticText[i];
+    }
+    textEl.innerHTML = textM.map(r=>`<div style="height:${lineHeight}px;line-height:${lineHeight}px">${r.join('')}</div>`).join('');
+  }
+
+  function handleResize(){
+    initMatrix(true);
+    render();
+  }
+
+  initMatrix(false);
+  render();
+  setInterval(generateRain,frameMs);
+  window.addEventListener('resize',handleResize);
+
+})();
+</script>
+</body>
+</html>
