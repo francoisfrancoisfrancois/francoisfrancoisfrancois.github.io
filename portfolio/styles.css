@@ -196,7 +196,7 @@ body {
 }
 
 /* Ensure the first slide’s image fills its container */
-.image-slides .slide:first-child img {
+.image-slides .slide:first-child:not(.slide-contain) img {
   object-fit: cover;
 }
 
