@@ -50,7 +50,7 @@
 body {
   font-size: var(--font-size);
   font-family: Helvetica, Arial, sans-serif;
-  font-weight: bold;
+  font-weight: normal;
   line-height: 1.125;
   background: var(--color-bg);
   color: var(--color-text);
@@ -237,8 +237,30 @@ body {
   border-top: solid #f4f4f4 1px;
 }
 
+.slide-top::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 35px;
+  pointer-events: none;
+  background: linear-gradient(to top, transparent, rgba(0,0,0,0.05));
+}
+
 .slide-bottom {
   border-bottom: solid #f4f4f4 1px;
+}
+
+.slide-bottom::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 35px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.05));
 }
 
 /* ===== PROGRESSIVE HEADER DESCRIPTION ===== */
