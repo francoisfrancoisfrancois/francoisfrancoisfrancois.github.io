@@ -6,14 +6,14 @@
 const PROJECTS = [
   {
     project: "Les Buts de l'Astronautique",
-    type:    "Publication",
+    type:    "Book",
     client:  "Self-initiated",
     year:    "2018",
   },
   {
     project: "ME Graph Mono",
     type:    "Typography",
-    client:  "HelloMe&thinsp;/&thinsp;Ledger",
+    client:  "HelloMe / Ledger",
     year:    "2020–21",
   },
   {
@@ -25,25 +25,19 @@ const PROJECTS = [
   {
     project: "Early Hours",
     type:    "Lettering, Visual identity",
-    client:  "HelloMe&thinsp;/&thinsp;Apple Music",
+    client:  "HelloMe / Apple Music",
     year:    "2022",
   },
   {
     project: "Selected lettering",
     type:    "Lettering, Visual identity",
-    client:  "HelloMe&thinsp;/&thinsp;Apple Music",
+    client:  "HelloMe / Apple Music",
     year:    "2020–24",
-  },
-  {
-    project: "Auf Wasser gebaut",
-    type:    "Publication",
-    client:  "HelloMe&thinsp;/&thinsp;IFA Visual Arts",
-    year:    "2022",
   },
   {
     project: "Autobahn",
     type:    "Exhibition, Communication",
-    client:  "HelloMe&thinsp;/&thinsp;Jörg Brüggemann",
+    client:  "HelloMe / Jörg Brüggemann",
     year:    "2021",
   },
   {
@@ -55,48 +49,49 @@ const PROJECTS = [
   {
     project: "www.sebastianschoenheit.co",
     type:    "Website, Identity",
-    client:  "HelloMe&thinsp;/&thinsp;Sebastian Schönheit",
+    client:  "HelloMe / Sebastian Schönheit",
     year:    "2022",
   },
 ];
 
 
 /* ============================================================
-   HELPERS
+   POPULATE PROJECT HEADERS
    ============================================================ */
 
 function slugify(str) {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
-
-/* ============================================================
-   POPULATE PROJECT HEADERS
-   ============================================================ */
-
 function populateHeaders() {
-  document.querySelectorAll('.project').forEach((section, i) => {
+  const projectSections = document.querySelectorAll('.project');
+
+  projectSections.forEach((section, i) => {
     const data = PROJECTS[i];
     if (!data) return;
 
+    // Assign a stable id for scroll targeting
     section.id = `project-${slugify(data.project)}`;
 
-    const set = (selector, html, asText = false) => {
-      const el = section.querySelector(selector);
-      if (!el) return;
-      if (asText) el.textContent = html;
-      else el.innerHTML = html;
-    };
+    const hProject = section.querySelector('.h-project');
+    const hType    = section.querySelector('.h-type');
+    const hClient  = section.querySelector('.h-client');
+    const hYear    = section.querySelector('.h-year');
 
-    set('.h-project', `Project<br>${data.project}`);
-    set('.h-type',    `Type<br>${data.type}`);
-    set('.h-client',  `Client<br>${data.client}`);
-    set('.h-year',    `Year<br>${data.year}`);
+    if (hProject) hProject.innerHTML = `Project<br>${data.project}`;
+    if (hType)    hType.innerHTML    = `Type<br>${data.type}`;
+    if (hClient)  hClient.innerHTML  = `Client<br>${data.client}`;
+    if (hYear)    hYear.innerHTML    = `Year<br>${data.year}`;
 
-    set('.t-project', data.project);
-    set('.t-type',    data.type);
-    set('.t-client',  data.client);
-    set('.t-year',    data.year);
+    const tProject = section.querySelector('.t-project');
+    const tType    = section.querySelector('.t-type');
+    const tClient  = section.querySelector('.t-client');
+    const tYear    = section.querySelector('.t-year');
+
+    if (tProject) tProject.textContent = data.project;
+    if (tType)    tType.textContent    = data.type;
+    if (tClient)  tClient.textContent  = data.client;
+    if (tYear)    tYear.textContent    = data.year;
   });
 }
 
@@ -109,7 +104,7 @@ function populateIndex() {
   const container = document.getElementById('intro-index-entries');
   if (!container) return;
 
-  container.innerHTML = PROJECTS.map(data => `
+  container.innerHTML = PROJECTS.map((data, i) => `
     <div class="intro-grid intro-index-row" data-target="project-${slugify(data.project)}" role="button" tabindex="0">
       <div class="i-index-project">${data.project}</div>
       <div class="i-index-type">${data.type}</div>
@@ -118,14 +113,16 @@ function populateIndex() {
     </div>
   `).join('');
 
+  // Wire up click + keyboard handlers
   container.querySelectorAll('.intro-index-row').forEach(row => {
-    const scrollToTarget = () => {
+    const handler = () => {
       const target = document.getElementById(row.dataset.target);
-      target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (!target) return;
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
-    row.addEventListener('click', scrollToTarget);
+    row.addEventListener('click', handler);
     row.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); scrollToTarget(); }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handler(); }
     });
   });
 }
@@ -155,6 +152,7 @@ function positionIntroIndex() {
   if (!row3) return;
 
   if (isMobile) {
+    // Mobile: natural flow, no offset
     row3.style.paddingTop = '';
     row3.style.marginTop  = '';
     return;
@@ -163,6 +161,10 @@ function positionIntroIndex() {
   const slide = document.querySelector('.intro-slide.section');
   if (!slide) return;
 
+  const slideH  = slide.offsetHeight;
+  const midpoint = slideH / 2;
+
+  // Measure everything above row-3 inside the slide
   const row1 = slide.querySelector('.intro-row-1');
   const row2 = slide.querySelector('.intro-row-2');
 
@@ -171,26 +173,31 @@ function positionIntroIndex() {
                + parseFloat(getComputedStyle(row2 || slide).marginTop || 0)
                + parseFloat(getComputedStyle(slide).paddingTop || 0);
 
-  const gap = Math.max(0, slide.offsetHeight / 2 - aboveH);
+  // We want the top of row-3 to sit at midpoint.
+  // margin-top: auto already consumed remaining space; add explicit paddingTop.
+  const gap = Math.max(0, midpoint - aboveH);
   row3.style.marginTop  = '0';
   row3.style.paddingTop = `${gap}px`;
 }
 
 function resizeSections() {
   const isMobile = window.innerWidth <= MOBILE_BREAKPOINT;
-  const h = computeSlideHeight();
+  const heightToApply = computeSlideHeight();
 
   const introSlide = document.querySelector('.intro-slide.section');
   if (introSlide) {
-    introSlide.style.height = isMobile ? '' : `${h}px`;
+    introSlide.style.height = isMobile ? '' : `${heightToApply}px`;
   }
 
-
-
-  document.querySelectorAll('.image-section .slide').forEach(el => {
-    el.style.height = `${h}px`;
+  document.querySelectorAll('.project-header.section').forEach(header => {
+    header.style.height = `${heightToApply}px`;
   });
 
+  document.querySelectorAll('.image-section .slide').forEach(slide => {
+    slide.style.height = `${heightToApply}px`;
+  });
+
+  // Re-anchor index after heights are set
   positionIntroIndex();
 }
 
@@ -199,26 +206,41 @@ function resizeSections() {
    STICKY TITLE DETECTION
    ============================================================ */
 
+function isElementStuckToTop(el) {
+  return el.getBoundingClientRect().top <= 0;
+}
+
 function initStickyObservers() {
   const titles = document.querySelectorAll('.project-sticky-title');
 
-  const evaluate = title => {
-    if (title.isConnected) {
-      title.classList.toggle('is-sticky', title.getBoundingClientRect().top <= 0);
-    }
-  };
+  function evaluate(title) {
+    if (!title.isConnected) return;
+    title.classList.toggle('is-sticky', isElementStuckToTop(title));
+  }
 
   titles.forEach(evaluate);
 
   let rafScheduled = false;
-  window.addEventListener('scroll', () => {
+  function onScrollOrRAF() {
     if (rafScheduled) return;
     rafScheduled = true;
     requestAnimationFrame(() => {
       titles.forEach(evaluate);
       rafScheduled = false;
     });
-  }, { passive: true });
+  }
+
+  let resizeTimer;
+  function onResize() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      resizeSections();
+      titles.forEach(evaluate);
+    }, 80);
+  }
+
+  window.addEventListener('scroll', onScrollOrRAF, { passive: true });
+  window.addEventListener('resize', onResize);
 
   if ('ResizeObserver' in window) {
     const ro = new ResizeObserver(() => titles.forEach(evaluate));
@@ -235,14 +257,15 @@ document.addEventListener('DOMContentLoaded', () => {
   populateHeaders();
   populateIndex();
   resizeSections();
-  document.fonts?.ready.then(() => resizeSections()).catch(() => {});
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => resizeSections()).catch(() => {});
+  }
+
   initStickyObservers();
 });
 
-window.addEventListener('resize', (() => {
-  let timeout;
-  return () => {
-    clearTimeout(timeout);
-    timeout = setTimeout(resizeSections, 80);
-  };
-})());
+window.addEventListener('resize', () => {
+  if (window.__resizeTimeout) clearTimeout(window.__resizeTimeout);
+  window.__resizeTimeout = setTimeout(resizeSections, 60);
+});

@@ -93,10 +93,10 @@ function populateHeaders() {
     set('.h-client',  `Client<br>${data.client}`);
     set('.h-year',    `Year<br>${data.year}`);
 
-    set('.t-project', data.project);
-    set('.t-type',    data.type);
-    set('.t-client',  data.client);
-    set('.t-year',    data.year);
+    set('.t-project', data.project, true);
+    set('.t-type',    data.type,    true);
+    set('.t-client',  data.client,  true);
+    set('.t-year',    data.year,    true);
   });
 }
 
@@ -185,7 +185,9 @@ function resizeSections() {
     introSlide.style.height = isMobile ? '' : `${h}px`;
   }
 
-
+  document.querySelectorAll('.project-header.section').forEach(el => {
+    el.style.height = `${h}px`;
+  });
 
   document.querySelectorAll('.image-section .slide').forEach(el => {
     el.style.height = `${h}px`;
