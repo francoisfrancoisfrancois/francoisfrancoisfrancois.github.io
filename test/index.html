@@ -145,11 +145,24 @@ a:hover {
   color: blue;
 }
 
+.root-block {
+  hyphens: none;
+}
+
 /* ─── Mobile ─────────────────────────────────────── */
 
 @media (max-width: 768px) {
   html, body {
     font-size: calc(100vw / 15.6);
+  }
+
+  .content {
+    flex: 1;
+    margin: 2.8vw 3.6vw;
+  }
+
+  footer {
+    margin: 2.8vw 3.6vw;
   }
 }
 
