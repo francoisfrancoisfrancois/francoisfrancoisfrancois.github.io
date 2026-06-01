@@ -21,12 +21,16 @@
   --page-right: 20px;
   --page-bottom: 15px;
   --page-left: 20px;
+  --font-size: 24px;
 }
 
 @media (max-width: 768px) {
   :root {
-    --page-margin-x: 12px;
-    --page-margin-y: 10px;
+    --page-top: 10px;
+    --page-right: 12px;
+    --page-bottom: 10px;
+    --page-left: 12px;
+    --font-size: 18px;
   }
 }
 
@@ -50,7 +54,7 @@ html, body {
   background-color: var(--color-bg);
   color: var(--color-text);
   font-family: 'HelveticaMonoNarrowLight', monospace;
-  font-size: 24px;
+  font-size: var(--font-size);
 
   /* JS updates this */
   line-height: var(--shared-line-height, 30px);
@@ -83,10 +87,6 @@ html, body {
   flex: 1;
   position: relative;
   z-index: 1;
-}
-
-footer {
-  margin: 15px 20px;
 }
 
 /* ─── Expandable ─────────────────────────────────── */
@@ -153,8 +153,10 @@ a:hover {
   color: blue;
 }
 
-.root-block {
-  hyphens: none !important;
+.root-block,
+.root-block * {
+  -webkit-hyphens: manual !important;
+  hyphens: manual !important;
 }
 
 /* ─── Rain overlay ───────────────────────────────── */
@@ -174,7 +176,7 @@ a:hover {
   pointer-events: none;
 
   font-family: 'HelveticaMonoNarrowLight', monospace;
-  font-size: 24px;
+  font-size: var(--font-size);
 
   line-height: var(--shared-line-height, 30px);
 
